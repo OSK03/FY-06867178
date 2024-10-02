@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    
+    <style>
+        table {
+            font-family: Arial, sans-serif;
+            border-collapse: collapse;
+            width: 30%;
+        }
+
+        td, th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #dddddd;
+        }
+
+        p.ex1 {
+            margin-left: 250px;
+        }
+
+        .mySlides {
+            display: none;
+        }
+    </style>
+</head>
+
+<body style="background-color:#FFFFFF;margin-left:50px;">
+    <img src="WebBanner.1.svg" alt="Banner" width="900" height="300">
+    <h1><b>ENG0018 Computer Laboratory 2023/24</b></h1>
+    <h2>Student URN: 6867178</h2>
+    <hr>
+    <h2 style="font-family:calibri;"><b>Conference paper: Bridge deck repairs</b></h2>
+
+    <hr>
+    <h3 id="Abstract">Abstract</h3>
+    <p class="ex1">
+        <pre>
+        This paper presents a novel adaptive active learning strategy...
+        </pre>
+    </p>
+
+    <hr>
+    <h4 id="Introduction">Introduction</h4>
+    <p class="ex1">
+        <pre>
+        “Active Learning (Angluin, 1988, Cohn et al., 1994) is a paradigm where...
+        </pre>
+    </p>
+</body>
+
+</html>
