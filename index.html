@@ -73,45 +73,17 @@
             return wordCount;
         }
         function displayTotalWordCount () {
-            const IntroductionCount = displaywordCount ("Abstract_InText");
-    const AnalysisCount = displayWordCount ("Conclusion_InText");
+            const AbstarctCount = displaywordCount ("Abstract_InText");
+    const ConclusionCount = displayWordCount ("Conclusion_InText");
+            const ApplicationCount = displayWordCount ("Application_InText");
+            const UnderstandingCount = displaywordCount ("Understanding_InText");
             
-const totalwordCount = AbstractCount + ConclusionCount;
+const totalwordCount = AbstractCount + ConclusionCount+UndersatandingCount;
             document.getElementById("totalWordCount"). innerText = 'Total word count: ${totalWordCount)';
         }
         window.onload=displayTotalWordCount;
     </script>
     
-    <!-- Placeholder for total word count -->
-<p id="totalWordCount"></p>
-<hr>
-<script>
-  // Function to calculate and display word count for a specified section
-  function displayWordCount(sectionId, outputId) {
-    // Get the text content from the specified section
-    const text = document.getElementById(sectionId).textContent;
-    // Split text into words based on spaces and filter out any empty strings
-    const wordArray = text.trim().split(/\s+/);
-    // Count the words
-    const wordCount = wordArray.length;
-    // Return the word count for summing purposes
-    return wordCount;
-  }
-  // Function to calculate and display total word count from selected sections
-  function displayTotalWordCount() {
-    // Calculate word count for each section and accumulate the total
-   
-      const IntroductionCount = displayWordCount("UnderstandingMedicalFibers_InText");
-    const AnalysisCount = displayWordCount("Application_and_production_InText");
-   
-      // Calculate the sum of all selected sections
-    const totalWordCount = IntroductionCount + AnalysisCount;
-    // Display the total word count
-    document.getElementById("totalWordCount").innerText = `Total word count: ${totalWordCount}`;
-  }
-  // Run the function for specific sections and display total count when the page loads
-  window.onload = displayTotalWordCount;
-</script>
 
 
     </script>
@@ -152,15 +124,17 @@ const totalwordCount = AbstractCount + ConclusionCount;
     <p>   </p>
     <p>   </p>
     <p class="ex2">
-        
+        <pre id= "Abstract_InText"> 
+       
 
 Medical fibers are the monomers  <tr>  <td><a href="#(Prete S. 2023)">(Prete S. 2023)</a></td>   </tr>   of biotextiles that could be either natural polymers or synthetic (manmade ones). The difference between synthetic and natural polymers is that synthetic ones can be synthesized and modified in a controlled manner to achieve specific properties for a given application. Both have shown to be effective as suitable suture materials especially natural polymers such as silk and linen fibers which have been used for over 500 years and non-absorbable polymers such as nylon, polypropylene  and other monofilament sutures with absorbable properties. Playing an integral role in medicine today they are manufactured using various methods such as melt extrusion, wet/gel spinning, electrospinning, centrifugal spinning and hydrogen fiber spinning all of which will be discussed more thoroughly in this article.   </p>
- 
+  </pre>
     <hr>
     
     <h3 id="Understanding medical fibres">Understanding medical fibres</h3>
     <p>   </p>
     <p>   </p>
+    <pre id= "Understanding_InText"> 
    <p class="ex2">One of the biggest challenges in the medical practice is finding new ways of closing wounds and applying sutures. This field is constantly being developed as even new approaches have limitations such as the risk of infections <tr>  <td><a href="#(Afewerki S. 2020)">(Afewerki S. 2020)</a></td>   </tr> , continues pain and in some results can cause leakage at the site of closure.  
 <p>    </p>
 
@@ -168,10 +142,11 @@ Medical fibers are the monomers  <tr>  <td><a href="#(Prete S. 2023)">(Prete S. 
 <p>    </p>
  
     <br><p class="ex2">Biotextiles are widely used in modern healthcare and due to their wide applications such as for wound dressing and care, surgical sutures and meshes <tr>  <td><a href="#(Fahimirad S. 2019)">(Fahimirad S. 2019)</a></td>   </tr>, arterial prosthesis, prosthetic heart valve material, blood transfusion filters, noninvasive biotextile-based closure devices for septal defects <tr>  <td><a href="#(Binte Akran S.N. 2022)">(Binte Akran S.N. 2022)</a></td>   </tr>,  vascular grafts<tr>  <td><a href="#(Chang C. 2020)">(Chang C. 2020)</a></td>   </tr>, drug delivery systems<tr>  <td><a href="#(Mounesan M. 2020)">(Mounesan M. 2020)</a></td>   </tr>, implants and prosthetics and are discussed thoroughly. Suture's main function is to provide the mechanical support necessary to sustain closure and to minimize tissue injury avoiding excess tension. Sutures quality is based on how easy it is to handle, flexibility, sterility, how biodegradable and antimicrobial it is<tr>  <td><a href="#(Guambo M.P.R 2020)">(Guambo M.P.R 2020)</a></td>   </tr>.  The basic sutures should be non-toxic, non-carcinogenic, non-allergenic, fully biocompatible and anti-microbial.   In the last 25 years, a range of degradable, synthetic sutures has dominated the market due to consistency in raw sources and reproducible manufacturing processes. They also tend to have more uniform bodies, and predictable properties which can prevent inflammation and allergic reactions as well as foreign-body responses. Currently, a large portion of research and development in this field goes into the development of monofilament sutures with absorbable properties with CAPROSYN <tr>  <td><a href="#(Pineros-Fernandez A. 2004)">(Pineros-Fernandez A. 2004)</a></td>   </tr> being one of the latest innovations.    </p>
-
+    </pre>
     <hr>
     
     <h3 id="Application and production">Application and production</h3>
+    <pre id= "Application_InText"> 
     <p>   </p>
     <p>   </p>
     <p class="ex2"> The production of medical fibers involves various methods, each selected based on the desired properties of the final product. Some common fiber production techniques include electrospinning, melt extrusion, and various types of spinning. Spinning is a general term used to describe a manufacturing process for creating polymer fibres. To learn more about it refer to Table 1. :  </p>
@@ -209,9 +184,9 @@ Medical fibers are the monomers  <tr>  <td><a href="#(Prete S. 2023)">(Prete S. 
 <p class="ex2">Melt extrusion is described as a solvent-free process of converting a raw material with plastic properties such as polymer pellets into a product of uniform shape and density by forcing it through a spinneret <tr>  <td><a href="#(Nelson K.D. 2015)">(Nelson K.D. 2015)</a></td>   </tr> under controlled temperature, product flow and pressure conditions. The main limitation of this technique is the high energy input mainly related to forces and temperature. In addition, both the polymer and drug that is being used should withstand high shear stress associated with melt extrusion without loss of biological activity and major degradation. The drug used should also be soluble or at least wettable and dispersible within the polymer melt. <tr>  <td><a href="#(Nelson K.D. 2015)">(Nelson K.D. 2015)</a></td>   </tr>  This method is used to produce nylon <tr>  <td><a href="#(Lombardi J.L. 1999)">(Lombardi J.L. 1999)</a></td>   </tr> and polyester mostly.   </p>
 
 
-    
+    </pre>
        <hr>
-   
+   <pre id= "Conclusion_InText"> 
         <h3 id="Conclusion">Conclusion</h3>
         <p>   </p>
         <p>   </p>
@@ -222,7 +197,7 @@ Medical fibers are the monomers of biotextiles that could be either natural poly
 const IntroductionCount=displayWordCount("UnderstandingMedicalFibers_InText");
         const 
    <hr> 
-   
+   </pre>
     <h3 id="References">References</h3> 
         <p>   </p>
         <p>   </p>
