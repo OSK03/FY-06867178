@@ -41,17 +41,58 @@
             margin-left: 50px;
             margin-right: 100px;
             font-family: Arial;
-            font-size:16px;
+            font-size:18px;
+        }
+
+           p.ex3 {    
+            margin-left: 50px;
+            margin-right: 100px;
+            font-family: Arial;
+            font-size:15px;
+        }
+                   p.ex4 {    
+            margin-left: 50px;
+            margin-right: 100px;
+            font-family: Arial;
+            font-size:20px;
         }
     </style>
 </head>
 
 <body>
-    <img src="WebBanner.1.svg" alt="Banner" width="900" height="300">
+    <p id="totalWordCount"></p>
+    <hr>
+
+    <script>
+        function displayWordCount(sectionId, ouputId) {
+                const text = document.getElementById(sectionId).textContent;
+
+            const wordArray = text. trim().split(/\s+/);
+            const wordCount = wordArray. length;
+
+            return wordCount;
+        }
+        function displayTotalWordCount () {
+            const AbstarctCount = displaywordCount ("Abstract_InText");
+    const ConclusionCount = displayWordCount ("Conclusion_InText");
+            const ApplicationCount = displayWordCount ("Application_InText");
+            const UnderstandingCount = displaywordCount ("Understanding_InText");
+            
+const totalwordCount = AbstractCount + ConclusionCount+UndersatandingCount;
+            document.getElementById("totalWordCount"). innerText = 'Total word count: ${totalWordCount)';
+        }
+        window.onload=displayTotalWordCount;
+    </script>
+    
+
+
+    </script><img src="WebBanner.1.svg" alt="Banner" width="900" height="300">
     <h1><b>ENG0018 Computer Laboratory 2024/25</b></h1>
     <h2>Student URN: 6867178</h2>
     <hr>
-    <h2 style="font-family: calibri;"><b>Medical fibres, their manufacture and application in a modern healthcare</b></h2>
+    <h2 style="font-family: calibre;"><u><b>Medical fibres, their manufacture and application in modern healthcare</u></b></h2>
+
+    <p>   </p>
 
     <!-- Table of contents -->
     <table>
@@ -73,88 +114,180 @@
         <tr>
             <td><a href="#References">References</a></td>
         </tr>
-       
+
     </table>
 
-   
+
     <hr>
     <h3 id="Abstract">Abstract</h3>
+    <p>   </p>
+    <p>   </p>
     <p class="ex2">
-        
 
-Medical fibers are the monomers of biotextiles that could be either natural polymers or synthetic (manmade ones). The difference between synthetic and natural polymers is that synthetic ones can be synthesized and modified in a controlled manner to achieve a specific properties for a given application.<a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10531657/#:~:text=Natural%20polymers%20offer%20several%20advantages,%2C%20and%20renewability%20%5B47%5D."><sup>1</sup></a> Both have shown to be effective as suitable suture materials especially natural polymers such as silk and linen fibers which have been used for over 500 years and non-absorbable polymers such as nylon, polypropylene  and other monofilament sutures with absorbable properties. Playing an integral role in medicine today they are manufactured using various methods such as melt extrusion, wet/gel spinning, electrospinning, centrifugal spinning and hydrogen fiber spinning all of which are going to be discussed more thoroughly in this article. 
-    </p>
+
+Medical fibers are the monomers  <tr>  <td><a href="#(Prete S. 2023)">(Prete S. 2023)</a></td>   </tr>   of biotextiles that could be either natural polymers or synthetic (manmade ones). The difference between synthetic and natural polymers is that synthetic ones can be synthesized and modified in a controlled manner to achieve specific properties for a given application. Both have shown to be effective as suitable suture materials especially natural polymers such as silk and linen fibers which have been used for over 500 years and non-absorbable polymers such as nylon, polypropylene  and other monofilament sutures with absorbable properties. Playing an integral role in medicine today they are manufactured using various methods such as melt extrusion, wet/gel spinning, electrospinning, centrifugal spinning and hydrogen fiber spinning all of which will be discussed more thoroughly in this article.   </p>
 
     <hr>
+
     <h3 id="Understanding medical fibres">Understanding medical fibres</h3>
-    <p class="ex2">One of the biggest challenges in the medical practice is comming up with new ways of closing wounds and applying sutures. This field is constantly being developed as even new approaches have limitations such as the risk of infections<sup>2</sup>, continues pain and in some results can cause leakage at the site of closure .  
+    <p>   </p>
+    <p>   </p>
+   <p class="ex2">One of the biggest challenges in the medical practice is finding new ways of closing wounds and applying sutures. This field is constantly being developed as even new approaches have limitations such as the risk of infections <tr>  <td><a href="#(Afewerki S. 2020)">(Afewerki S. 2020)</a></td>   </tr> , continues pain and in some results can cause leakage at the site of closure.  
+<p>    </p>
 
-<br>The synthetic sutures used today are the result of evolution of natural fibres (plant fibres, hair tendons and wool threads) used approximately 3000 years BCE by ancient Egyptians with a direct mention of linen in The Edwin Smith papyrus dated of 1600 BCE. For example, on the subject of treating a laceration, the the papyrus reads, ‘If thou findest that wound open and its stitching loose thou shouldst draw together for him the gash with two strips of linen’<sup>3</sup>.  However due to the limitations many natural fibres are not used as widely nowadays with medics preferring synthetic to biological ones with an exception to surgical steel, silk, cotton and linen fibers.  
+    <br><p class="ex2">The synthetic sutures used today are the result of an evolution of natural fibres (plant fibres, hair tendons and wool threads) used approximately 3000 years BCE by ancient Egyptians with a direct mention of linen in The Edwin Smith papyrus dated of 1600 BCE. For example, on the subject of treating a laceration, the the papyrus reads, <i> ‘If thou findest that wound open and its stitching loose thou shouldst draw together for him the gash with two strips of linen’</i> <tr>  <td><a href="#(Dawson W. R. 1927)">(Dawson W. R. 1927)</a></td>   </tr>  .  However, due to the limitations, many natural fibres are not used as widely nowadays. Medics prefer synthetic to biological ones except for surgical steel, silk, cotton and linen fibers.<tr>  <td><a href="#(Choi Y. 2019)">(Choi Y. 2019)</a></td>   </tr>  
+<p>    </p>
 
- <br>Biotextiles are widely used in modern healthcare and due to their wide applications such as for wound dressing and care, surgical sutures and meshes, arterial prosthesis, prosthetic heart valve material, blood transfusion filters, noninvasive biotextile-based closure devices for septal defects,  vascular grafts, drug delivery systems, implants and prosthetics and are discussed thoroughly. Suture's main function is to provide the mechanical support necessary to sustain closure and to minimize tissue injury avoiding excess tension. Sutures quality is based on how easy it is to handle, flexibility, sterility, how biodegradable and antimicrobial it is.  The basic sutures should be non-toxic, non-carcinogenic, non-allergenic, fully biocompatible and anti-microbial.   In the last 25 years, a range of degradable, synthetic sutures has dominated the market due to consistency in raw sources and reproducible manufacturing process. They also tend to have more uniform bodies, predictable properties which can prevent inflammation and allergic reactions as well as foreign-body responses. Currently a large portion of research and development in this field goes into development of monofilament sutures with absorbable properties with CAPROSYN being one of the latest innovations.    </p>
+    <br><p class="ex2">Biotextiles are widely used in modern healthcare and due to their wide applications such as for wound dressing and care, surgical sutures and meshes <tr>  <td><a href="#(Fahimirad S. 2019)">(Fahimirad S. 2019)</a></td>   </tr>, arterial prosthesis, prosthetic heart valve material, blood transfusion filters, noninvasive biotextile-based closure devices for septal defects <tr>  <td><a href="#(Binte Akran S.N. 2022)">(Binte Akran S.N. 2022)</a></td>   </tr>,  vascular grafts<tr>  <td><a href="#(Chang C. 2020)">(Chang C. 2020)</a></td>   </tr>, drug delivery systems<tr>  <td><a href="#(Mounesan M. 2020)">(Mounesan M. 2020)</a></td>   </tr>, implants and prosthetics and are discussed thoroughly. Suture's main function is to provide the mechanical support necessary to sustain closure and to minimize tissue injury avoiding excess tension. Sutures quality is based on how easy it is to handle, flexibility, sterility, how biodegradable and antimicrobial it is<tr>  <td><a href="#(Guambo M.P.R 2020)">(Guambo M.P.R 2020)</a></td>   </tr>.  The basic sutures should be non-toxic, non-carcinogenic, non-allergenic, fully biocompatible and anti-microbial.   In the last 25 years, a range of degradable, synthetic sutures has dominated the market due to consistency in raw sources and reproducible manufacturing processes. They also tend to have more uniform bodies, and predictable properties which can prevent inflammation and allergic reactions as well as foreign-body responses. Currently, a large portion of research and development in this field goes into the development of monofilament sutures with absorbable properties with CAPROSYN <tr>  <td><a href="#(Pineros-Fernandez A. 2004)">(Pineros-Fernandez A. 2004)</a></td>   </tr> being one of the latest innovations.    </p>
 
     <hr>
+
     <h3 id="Application and production">Application and production</h3>
-    <p class="ex2"> The production of medical fibers involves various methods, each selected based on the desired properties of the final product. Some common fiber production techniques include:  </p>
+    <p>   </p>
+    <p>   </p>
+    <p class="ex2"> The production of medical fibers involves various methods, each selected based on the desired properties of the final product. Some common fiber production techniques include electrospinning, melt extrusion, and various types of spinning. Spinning is a general term used to describe a manufacturing process for creating polymer fibres. To learn more about it refer to Table 1. :  </p>
 
-<p class="ex1">1. Electrospinning  </p>
 
-<p class="ex2">This technique uses an electrical force to draw charged threads of polymer solutions for producing nanofibres with  diameters ranging from nanometers to micrometers. It has specifically gained attention among researches in an effort to obtain more compliant and antibacterial meshes. Unfortunately, this technology often relies on the use of solvents which sometimes prove to be harmful for a human body. The other issue of this method that meshes produced are hard to customize and are often preshaped.  </p>
+    <p class="ex3"> <u>Table1</u></p>
 
-<p class="ex1">2. Melt Extrusion:  </p>
-
-<p class="ex2">Melt extrusion is described as a solvent-free process of converting a raw material with plastic properties such as polymer pellets into a product of uniform shape and density by forcing it through a spinneret under controlled temperature, product flow and pressure conditions. The main limitation of this technique is the high energy input mainly related to forces and temperature. In addition both polymer and drug that is being used should withstand high shear stress associated with melt extrusion without loss of biological activity and major degradation. The drug used should also be soluble or at least wettable and dispersible within the polymer melt.  This method is used to produce nylon and polyester mostly.  </p>
-
-<p class="ex1">3. Wet/Gel Spinning  </p>
-
- <p class="ex2">This method involves dissolving a polymer in a solvent to create a gel or solution, which is then extruded through a spinneret and solidified in a coagulation bath. Wet spinning is commonly used for fibers made from polymers such as silk and collagen, as well as for certain synthetic fibers.  </p>
-
-<p class="ex1">4. Centrifugal Spinning  </p>
-
- <p class="ex2">Centrifugal spinning utilizes a rotating disk to fling a polymer solution into fine fibers. This method is used to produce high-strength fibers that are often employed in biomedical applications, including surgical meshes and wound care products.  </p>
-
-<p class="ex1">5. Hydrogel Fiber Spinning:</p>
-    <p>Hydrogel fibers are spun from a polymer that forms a gel-like structure when hydrated. These fibers are highly absorbent and biocompatible, making them ideal for use in wound care and tissue engineering applications.  </p>
-
-    
-       <hr>
-    <h3 id="Conclusion">Conclusion</h3>
-    <p class="ex2">       
-
-Medical fibers are the monomers of biotextiles that could be either natural polymers or synthetic (manmade ones). The difference between synthetic and natural polymers is that synthetic ones can be synthesized and modified in a controlled manner to achieve a specific properties for a given application. Both have shown to be effective as suitable suture materials especially natural polymers such as silk and linen fibers which have been used for over 500 years and non-absorbable polymers such as nylon, polypropylene  and other monofilament sutures with absorbable properties. Playing an integral role in medicine today they are manufactured using various methods such as melt extrusion, wet/gel spinning, electrospinning, centrifugal spinning and hydrogen fiber spinning all of which are going to be discussed more thoroughly in this article. 
-    </p>
-
-        <h3>      <a href=”https://www.icevirtuallibrary.com/doi/full/10.1680/jbren.21.00034”>Toshihiko et al (2023).</a></h3>
     <table> <h3>
+        <table style="width:80%">
     <tr>
-        <th>£Cost of repairs</th>
-        <th>Lifespan of repairs (years)</th>
+        <th>Spinning Type </th>
+        <th>Method </th>
     </tr>
     <tr>
-        <td>0.7 m</td>
-        <td>2</td>
+        <td>Wet/Gel Spinning </td>
+        <td><p class="ex2">This method involves dissolving a polymer in a solvent to create a gel or solution, which is then extruded through a spinneret and solidified in a coagulation bath. Wet spinning is commonly used for fibers made from polymers such as silk and collagen, as well as for certain synthetic fibers. </td>
+    <tr>
+        <td>Centrifugal Spinning </td>
+        <td><p class="ex2">Centrifugal spinning utilizes a rotating disk to fling a polymer solution into fine fibers. This method is used to produce high-strength fibers that are often employed in biomedical applications, including surgical meshes and wound care products. </td>
     </tr>
     <tr>
-        <td>2.6m</td>
-        <td>5</td>
-    </tr>
-    <tr>
-        <td>8.8m</td>
-        <td>9</td>
+        <td>Hydrogel Fiber Spinning</td>
+        <td><p class="ex2">Hydrogel fibers are spun from a polymer that forms a gel-like structure when hydrated. These fibers are highly absorbent and biocompatible, making them ideal for use in wound care and tissue engineering applications. </td>
     </tr>
     </table>   
     </p>
 </h3>
 
-    <h3 id="References">References</h3>
-    <p>
-    <pre>
-         Angluin, D (1988), Queeries and concept learning. Machine learning 2, (4), 319-342.
+        <p class="ex4"> Electrospinning  </p>
 
-        Brinker, K (2003), Incorporationg diversity in Active learning with support vector machined,
-        Proceedings of the Twentienth International Conference on Machine Learning (IMCL- 2003).
-    </pre>
-    </p>
+<p class="ex2">This technique uses an electrical force to draw charged threads of polymer solutions for producing nanofibres with  diameters ranging from nanometers to micrometres. It has specifically gained attention among researchers in an effort to obtain more compliant and antibacterial meshes. Unfortunately, this technology often relies on the use of solvents which sometimes prove to be harmful for the human body. The other issue of this method is that the meshes produced are hard to customize and are often preshaped.  <tr>  <td><a href="#(Corduas F. 2021)">(Corduas F. 2021)</a></td>      </tr> <tr>  <td><a href="#(Ullah Khan I. 2018)">(Ullah Khan I. 2018)</a></td>   </tr> </p>
+
+<p class="ex4"> Melt Extrusion:  </p>
+
+<p class="ex2">Melt extrusion is described as a solvent-free process of converting a raw material with plastic properties such as polymer pellets into a product of uniform shape and density by forcing it through a spinneret <tr>  <td><a href="#(Nelson K.D. 2015)">(Nelson K.D. 2015)</a></td>   </tr> under controlled temperature, product flow and pressure conditions. The main limitation of this technique is the high energy input mainly related to forces and temperature. In addition, both the polymer and drug that is being used should withstand high shear stress associated with melt extrusion without loss of biological activity and major degradation. The drug used should also be soluble or at least wettable and dispersible within the polymer melt. <tr>  <td><a href="#(Nelson K.D. 2015)">(Nelson K.D. 2015)</a></td>   </tr>  This method is used to produce nylon <tr>  <td><a href="#(Lombardi J.L. 1999)">(Lombardi J.L. 1999)</a></td>   </tr> and polyester mostly.   </p>
+
+
+
+       <hr>
+
+        <h3 id="Conclusion">Conclusion</h3>
+        <p>   </p>
+        <p>   </p>
+    <p class="ex2">       
+
+        
+In conclusion, medical fibers have played a great pivotal role in advancing healthcare practices, particularly in wound care and surgical applications. These fibers, whether derived from natural or synthetic polymers, provide essential mechanical support, promote healing, and minimize tissue injury. While natural fibers such as silk and linen have a rich historical significance, modern advancements have shifted the focus towards synthetic alternatives due to their greater consistency, biocompatibility, and customizable properties </p>
+<p class="ex3">Word count (908)</p>
+       
+   <hr> 
+         <h3 id="Vided">Video</h3>
+        <video src="Medical finalfinal.mp4" width="800" height="450" controls>
+        </video>
+       
+        <hr>
+
+    <h3 id="References">References</h3> 
+        <p>   </p>
+        <p>   </p>
+    <class="ex2">
+            <h3 id="(Afewerki S. 2020)">(Afewerki S. 2020)</h3><p class="ex2">Afewerki, S., Bassous, N., Harb, S., Palo-Nieto, C., Ruiz-Esparza, G.U., Marciano, F.R., Webster, T.J., Furtado, A.S.A. and Lobo, A.O. (2020). Advances in dual functional antimicrobial and osteoinductive biomaterials for orthopaedic applications. Nanomedicine: Nanotechnology, Biology and Medicine, 24, <class="ex2"><a href="https://pubmed.ncbi.nlm.nih.gov/31862427/">DOI</a>  
+
+            <h3 id="(Binte Akran S.N. 2022)">(Binte Akran S.N. 2022)</h3><p class="ex2">Binte Akram, S.N., Jahangir, M.U., Mondal, Md.I.H. and Arafat, M.T. (2022). Biotextiles for medical implants and regenerative medicine. [online] Woodhead Publishing, pp.169–211.  <class="ex2"><a href="https://www.sciencedirect.com/science/article/pii/B9780323904797000208">DOI</a>
+
+            <h3 id="(Chang C. 2020)">(Chang C. 2020)</h3><p class="ex2">Chang, C., Ginn, B., Livingston, N.K., Yao, Z., Slavin, B., King, M.W., Chung, S. and Mao, H.-Q. (2020). 1.4.6 - Medical Fibers and Biotextiles. <class="ex2"><a href="https://www.sciencedirect.com/science/article/pii/B9780128161371000386">DOI</a>
+
+            <h3 id="(Choi Y. 2019)">(Choi Y. 2019)</h3> <p class="ex2"> Choi, Y., Kang, M., Choi, M.S., Kim Song, J., Lih, E., Lee, D. and Jung, H.-H. (2019). Biomechanical Properties and Biocompatibility of a Non-Absorbable Elastic Thread. Journal of Functional Biomaterials, 10(4), p.51. <class="ex2"><a href="https://pubmed.ncbi.nlm.nih.gov/31744160/">DOI</a>
+
+            <h3 id="(Corduas F. 2021)">(Corduas F. 2021)</h3><p class="ex2">Corduas, F., Mathew, E., McGlynn, R., Mariotti, D., Lamprou, D.A. and Mancuso, E. (2021). Melt-extrusion 3D printing of resorbable levofloxacin-loaded meshes: An emerging strategy for urogynaecological applications. Materials Science and Engineering: C <class="ex2"><a href="https://www.sciencedirect.com/science/article/pii/S0928493121006639">DOI</a>
+
+            <h3 id="(Dawson W. R. 1927)">(Dawson W. R. 1927)</h3><p class="ex2">Dawson W.R. (1927). Making a Mummy. The Journal of Egyptian Archaeology, 13(1), pp.40–49.<class="ex2"><a href="https://journals.sagepub.com/doi/abs/10.1177/030751332701300107">DOI</a>
+
+            <h3 id="(Fahimirad S. 2019)">(Fahimirad S. 2019)</h3><p class="ex2"> Fahimirad, S. and Ajalloueian, F. (2019). Naturally derived electrospun wound dressings for target delivery of bio-active agents. International Journal of Pharmaceutics, 566, pp.307–328.<class="ex2"><a href="https://www.sciencedirect.com/science/article/pii/S0378517319304120">DOI</a>
+
+            <h3 id="(Guambo M.P.R 2020)">(Guambo M.P.R 2020)</h3><p class="ex2">Guambo, M.P.R., Spencer, L., Vispo, N.S., Vizuete, K., Debut, A., Whitehead, D.C., Santos-Oliveira, R. and Alexis, F. (2020). Natural Cellulose Fibers for Surgical Suture Applications. Polymers, 12(12), p.3042<class="ex2"><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC7765994/">DOI</a>
+
+            <h3 id="(Lombardi J.L. 1999)">(Lombardi J.L. 1999)</h3><p class="ex2">Lombardi, J.L. and Calvert, P. (1999). Extrusion freeforming of Nylon 6 materials. Polymer, 40(7), pp.1775–1779.  <class="ex2"><a href="https://www.sciencedirect.com/science/article/pii/S0032386198004029">DOI</a>
+
+            <h3 id="(Mounesan M. 2020)">(Mounesan M. 2020)</h3><p class="ex2">Mounesan, M., Jalali, S. and Montazer, M. (2022). Biotextiles and their applications for drug release. [online] Woodhead Publishing, pp.255–284. <class="ex2"><a href="https://www.sciencedirect.com/science/article/pii/B978032390479700021X">DOI</a> 
+
+            <h3 id="(Nelson K.D. 2015)">(Nelson K.D. 2015)</h3><p class="ex2">Nelson, K.D. (2015). 6 - Absorbable, drug-loaded, extruded fiber for implantation.  <class="ex2"><a href="https://www.sciencedirect.com/science/article/pii/B9781782420170000064">DOI</a>
+
+            <h3 id="(Pineros-Fernandez A. 2004)">(Pineros-Fernandez A. 2004)</h3><p class="ex2">Pineros-Fernandez, A., Drake, D.B., Rodeheaver, P.A., Moody, D.L., Edlich, R. and Rodeheaver, G.T. (2004). CAPROSYN*, Another Major Advance in Synthetic Monofilament Absorbable Suture. Journal of Long-Term Effects of Medical Implants, 14(5), p.10 <class="ex2"><a href="https://www.researchgate.net/publication/8237319_CAPROSYN_Another_Major_Advance_in_Synthetic_Monofilament_Absorbable_Suture">DOI</a>
+
+            <h3 id="(Prete S. 2023)">(Prete S. 2023)</h3> <p class="ex2">Prete, S., Dattilo, M., Patitucci, F., Pezzi, G., Parisi, O.I. and Puoci, F. (2023). Natural and Synthetic Polymeric Biomaterials for Application in Wound Management. Journal of Functional Biomaterials <class="ex2"><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10531657/#:~:text=Natural%20polymers%20offer%20several%20advantages,%2C%20and%20renewability%20%5B47%5D.">DOI</a>
+
+            <h3 id="(Ullah Khan I. 2018)">(Ullah Khan I. 2018)</h3><p class="ex2">Ullah Khan, I., Othman, M.H.D., Ismail, A.F., Matsuura, T., Hashim, H., Nordin, N.A.H.M., Rahman, M.A., Jaafar, J. and Jilani, A. (2018). Status and improvement of dual-layer hollow fiber membranes via co-extrusion process for gas separation: A review. Journal of Natural Gas Science and Engineering, 52, pp.215–234. <class="ex2"><a href="https://www.sciencedirect.com/science/article/pii/S187551001830057X">DOI</a>
+
+
+
+<div id="last-updated">Loading last update time...</div>
+<button onclick="verifyLastUpdatedTime()" style="display: block; margin: 10px auto; padding: 8px 16px;">
+    Verify Last Modified Time
+</button>
+<script>
+    async function getLastUpdatedTime() {
+        const username = 'OSK03';
+        const repo = 'FY-06867178';
+        const url = `https://api.github.com/repos/${username}/${repo}/commits`;
+
+        try {
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/vnd.github.v3+json',
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error(`Error fetching data: ${response.status} - ${response.statusText}`);
+            }
+
+            const commits = await response.json();
+            if (commits && commits.length > 0) {
+                const lastCommitDate = new Date(commits[0].commit.committer.date);
+                document.getElementById('last-updated').innerText =
+                    `Last Modified Time: ${lastCommitDate.toLocaleString()}`;
+            } else {
+                document.getElementById('last-updated').innerText = 'No commits found in the repository.';
+            }
+        } catch (error) {
+            console.error('Error fetching the last updated time:', error);
+            document.getElementById('last-updated').innerText =
+                'Error fetching update time. Please check the repository details.';
+        }
+    }
+
+    async function verifyLastUpdatedTime() {
+        document.getElementById('last-updated').innerText = 'Verifying...';
+        await getLastUpdatedTime();
+        alert('Last modified time has been successfully verified from GitHub API.');
+    }
+</script>
+
+window.onload = getLastUpdatedTime;
+    <script>
+let text = document.lastModified;
+document.getElementById("demo").innerHTML = text;
+
+</script>
+
+</body>
+
+</html>
+
 </body>
 
 </html>
