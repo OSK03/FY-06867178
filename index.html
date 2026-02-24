@@ -3,253 +3,312 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>SurreyLearn | Mathematics Engagement</title>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+    <title>SurreyLearn | Gamified Mathematics</title>
     <style>
         :root {
-            --duo-blue: #1cb0f6;
-            --duo-green: #78c800;
-            --duo-green-border: #58a700;
-            --duo-gray: #afafaf;
-            --duo-border: #e5e5e5;
+            /* Professional University Palette */
             --surrey-navy: #003366;
-            --text-dark: #4b4b4b;
+            --surrey-blue: #2b6cb0;
+            --surrey-light: #ebf8ff;
+            --surrey-gold: #d4af37;
+            
+            /* Clean UI Colors */
+            --bg-color: #f4f7f9;
+            --card-bg: #ffffff;
+            --text-main: #2d3748;
+            --text-muted: #718096;
+            --border-color: #e2e8f0;
+            
+            /* Gamification Accents */
+            --success-green: #38a169;
+            --radius: 12px;
         }
 
         body {
-            font-family: 'Nunito', sans-serif;
-            background-color: #ffffff;
-            color: var(--text-dark);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
             margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .app-wrapper {
-            width: 100%;
-            max-width: 600px;
             padding: 20px;
-            box-sizing: border-box;
+            display: flex;
+            justify-content: center;
         }
 
-        /* --- STAG MASCOT SECTION --- */
-        .mascot-row {
+        .dashboard-wrapper {
+            max-width: 900px;
+            width: 100%;
+        }
+
+        /* --- Header / Mascot Banner --- */
+        .mascot-banner {
+            background: linear-gradient(135deg, var(--surrey-navy), var(--surrey-blue));
+            border-radius: var(--radius);
+            padding: 20px 30px;
+            color: white;
             display: flex;
             align-items: center;
-            gap: 15px;
-            margin: 20px 0 40px 0;
+            gap: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0, 51, 102, 0.15);
         }
 
-        .stag-wrapper {
-            position: relative;
-            flex-shrink: 0;
-        }
-
-        .stag-circle {
-            width: 90px;
-            height: 90px;
-            background: #f1f1f1;
+        .stag-icon {
+            background: white;
+            width: 70px;
+            height: 70px;
             border-radius: 50%;
-            border: 3px solid var(--duo-border);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 50px; /* Temporary Stag Emoji */
+            font-size: 35px;
+            box-shadow: 0 0 0 4px rgba(255,255,255,0.2);
+            flex-shrink: 0;
         }
 
-        .speech-bubble {
-            background: white;
-            border: 2px solid var(--duo-border);
-            border-radius: 18px;
-            padding: 15px 20px;
-            position: relative;
-            box-shadow: 0 4px 0 var(--duo-border);
-            font-weight: 700;
-            font-size: 1.1em;
-            color: var(--text-dark);
+        .banner-text h1 {
+            margin: 0 0 5px 0;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .banner-text p {
+            margin: 0;
+            font-size: 14px;
+            opacity: 0.9;
             line-height: 1.4;
         }
 
-        /* Bubble arrow */
-        .speech-bubble::before {
-            content: '';
-            position: absolute;
-            left: -12px;
-            top: 50%;
-            transform: translateY(-50%);
-            border-top: 10px solid transparent;
-            border-bottom: 10px solid transparent;
-            border-right: 12px solid var(--duo-border);
+        /* --- Grid Layout --- */
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
         }
 
-        .speech-bubble::after {
-            content: '';
-            position: absolute;
-            left: -9px;
-            top: 50%;
-            transform: translateY(-50%);
-            border-top: 9px solid transparent;
-            border-bottom: 9px solid transparent;
-            border-right: 11px solid white;
+        @media (max-width: 768px) {
+            .grid-container {
+                grid-template-columns: 1fr;
+            }
         }
 
-        /* --- CHUNKY CARDS --- */
-        .duo-card {
-            border: 2px solid var(--duo-border);
-            border-radius: 18px;
-            padding: 24px;
-            margin-bottom: 24px;
-            box-shadow: 0 4px 0 var(--duo-border);
+        /* --- UI Cards --- */
+        .ui-card {
+            background-color: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 25px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            position: relative;
         }
 
-        .section-label {
-            color: var(--duo-gray);
-            font-weight: 800;
+        .card-header {
+            font-size: 12px;
             text-transform: uppercase;
-            font-size: 0.85em;
             letter-spacing: 1px;
+            color: var(--text-muted);
+            font-weight: 700;
             margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
         }
 
-        /* --- PROGRESS BAR --- */
-        .progress-bar-bg {
-            background: #e5e5e5;
-            height: 16px;
+        /* --- Progress Elements --- */
+        .metric-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: var(--surrey-navy);
+            margin-bottom: 5px;
+        }
+
+        .progress-track {
+            background-color: #edf2f7;
+            height: 12px;
             border-radius: 20px;
+            width: 100%;
+            margin: 15px 0 10px 0;
             overflow: hidden;
-            margin: 15px 0;
         }
 
-        .progress-bar-fill {
-            background: var(--duo-blue);
+        .progress-fill {
+            background-color: var(--surrey-blue);
             height: 100%;
-            width: 75%; /* Example Progress */
             border-radius: 20px;
-            transition: width 0.5s ease;
+            transition: width 1s ease-in-out;
         }
 
-        /* --- LEADERBOARD --- */
-        .rank-item {
+        .progress-fill.gold {
+            background: linear-gradient(90deg, #d4af37, #f3e5ab);
+        }
+
+        /* --- Rewards Highlight --- */
+        .reward-highlight {
+            background-color: #fffaf0;
+            border-left: 4px solid var(--surrey-gold);
+            padding: 15px;
+            border-radius: 0 var(--radius) var(--radius) 0;
+            margin-top: 20px;
+        }
+
+        .reward-highlight strong {
+            color: #b7791f;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        /* --- Leaderboard (Fully Anonymized) --- */
+        .leaderboard-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .leaderboard-item {
             display: flex;
             align-items: center;
-            padding: 12px 10px;
-            border-bottom: 2px solid var(--duo-border);
-            font-weight: 700;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 15px;
         }
 
-        .rank-item:last-child { border-bottom: none; }
-
-        .rank-num { width: 30px; color: var(--duo-gray); }
-        .rank-alias { flex-grow: 1; }
-        .rank-points { color: var(--duo-blue); }
-
-        .rank-item.user-highlight {
-            background: #ddf4ff;
-            color: #1899d6;
-            border-radius: 12px;
-            border-bottom-color: transparent;
+        .leaderboard-item:last-child {
+            border-bottom: none;
         }
 
-        /* --- BUTTONS --- */
-        .duo-btn {
-            background-color: var(--duo-green);
-            color: white;
-            border: none;
-            border-radius: 15px;
-            padding: 16px;
-            width: 100%;
-            font-family: 'Nunito', sans-serif;
-            font-weight: 800;
-            font-size: 1.1em;
-            text-transform: uppercase;
-            cursor: pointer;
-            box-shadow: 0 4px 0 var(--duo-green-border);
-            transition: all 0.1s;
+        .rank {
+            width: 30px;
+            font-weight: bold;
+            color: var(--text-muted);
         }
 
-        .duo-btn:active {
-            transform: translateY(4px);
-            box-shadow: none;
+        .student-id {
+            flex-grow: 1;
+            font-weight: 500;
         }
 
-        /* --- FOOTER/SYNC --- */
-        .sync-text {
+        .points {
+            font-weight: bold;
+            color: var(--surrey-blue);
+        }
+
+        .current-user {
+            background-color: var(--surrey-light);
+            padding: 12px 15px;
+            margin: 0 -15px;
+            border-radius: 8px;
+            border-bottom: none;
+            color: var(--surrey-navy);
+        }
+
+        .current-user .rank, .current-user .points {
+            color: var(--surrey-navy);
+        }
+
+        /* --- System Info --- */
+        .system-footer {
             text-align: center;
-            font-size: 0.75em;
-            color: var(--duo-gray);
-            font-weight: 700;
+            font-size: 12px;
+            color: var(--text-muted);
             margin-top: 30px;
-            text-transform: uppercase;
         }
     </style>
 </head>
 <body>
 
-<div class="app-wrapper">
+<div class="dashboard-wrapper">
 
-    <div class="mascot-row">
-        <div class="stag-wrapper">
-            <div class="stag-circle">
-                🦌
-            </div>
-        </div>
-        <div class="speech-bubble">
-            Amazing effort! You've climbed 3 spots in the <span style="color:var(--duo-blue)">Q2 Leaderboard</span> this week!
+    <div class="mascot-banner">
+        <div class="stag-icon">🦌</div>
+        <div class="banner-text">
+            <h1>Welcome back, Student 42</h1>
+            <p>Consistent engagement is the key to mastering mathematics. You are currently performing in the top 50% of your cohort. Keep up the excellent work!</p>
         </div>
     </div>
 
-    <div class="duo-card">
-        <div class="section-label">Current Status</div>
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div style="font-size: 3.5em; font-weight: 800; color: var(--surrey-navy);">Q2</div>
-            <div style="text-align: right;">
-                <div class="section-label" style="margin:0;">Points</div>
-                <div style="font-size: 1.8em; font-weight: 800;">1,450</div>
-            </div>
-        </div>
+    <div class="grid-container">
         
-        <div class="section-label" style="margin-top: 25px;">Progress to Q1</div>
-        <div class="progress-bar-bg">
-            <div class="progress-bar-fill"></div>
+        <div class="column">
+            <div class="ui-card" style="margin-bottom: 20px;">
+                <div class="card-header">
+                    <span>Performance Ranking</span>
+                    <span>1,450 Points</span>
+                </div>
+                <div class="metric-value">Quartile 2</div>
+                <p style="font-size: 13px; color: var(--text-muted); margin: 0;">Relative to module cohort</p>
+                
+                <div class="progress-track">
+                    <div class="progress-fill" style="width: 75%;"></div>
+                </div>
+                <div style="font-size: 12px; text-align: right; color: var(--text-muted);">75% to Quartile 1</div>
+            </div>
+
+            <div class="ui-card">
+                <div class="card-header">
+                    <span>Academic Rewards</span>
+                    <span style="color: var(--surrey-gold);">Level 7</span>
+                </div>
+                
+                <div style="font-size: 14px; line-height: 1.5;">
+                    Earn experience points (XP) by completing structured tasks and weekly challenges without the pressure of a timer.
+                </div>
+
+                <div class="progress-track">
+                    <div class="progress-fill gold" style="width: 70%;"></div>
+                </div>
+                <div style="font-size: 12px; text-align: right; color: var(--text-muted);">3 Levels to go</div>
+
+                <div class="reward-highlight">
+                    <strong>🎯 Ultimate Goal: Level 10</strong>
+                    <span style="font-size: 13px; color: #744210;">
+                        When Level 10 is reached, you will automatically unlock a <b>5% boost for your final exam</b>.
+                    </span>
+                </div>
+            </div>
         </div>
-        <div style="font-weight: 700; font-size: 0.9em; text-align: center;">75% of the way there!</div>
-    </div>
 
-    <div class="duo-card">
-        <div class="section-label">Quartile 2 Rankings</div>
-        <div class="rank-list">
-            <div class="rank-item">
-                <span class="rank-num">1</span>
-                <span class="rank-alias">AquaFalcon_99</span>
-                <span class="rank-points">1,620</span>
-            </div>
-            <div class="rank-item user-highlight">
-                <span class="rank-num">2</span>
-                <span class="rank-alias">CyberSurrey_01 (You)</span>
-                <span class="rank-points">1,450</span>
-            </div>
-            <div class="rank-item">
-                <span class="rank-num">3</span>
-                <span class="rank-alias">NeonStag_22</span>
-                <span class="rank-points">1,380</span>
-            </div>
-            <div class="rank-item">
-                <span class="rank-num">4</span>
-                <span class="rank-alias">SilverEcho_04</span>
-                <span class="rank-points">1,100</span>
+        <div class="column">
+            <div class="ui-card" style="height: 100%; box-sizing: border-box;">
+                <div class="card-header">
+                    <span>Quartile 2 Leaderboard</span>
+                    <span style="color: var(--success-green);">Live</span>
+                </div>
+                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">
+                    Students are anonymized to reduce social pressure while maintaining healthy competition within your current skill bracket.
+                </p>
+
+                <ul class="leaderboard-list">
+                    <li class="leaderboard-item">
+                        <span class="rank">1</span>
+                        <span class="student-id">Student 89</span>
+                        <span class="points">1,620 pts</span>
+                    </li>
+                    <li class="leaderboard-item current-user">
+                        <span class="rank">2</span>
+                        <span class="student-id">Student 42 (You)</span>
+                        <span class="points">1,450 pts</span>
+                    </li>
+                    <li class="leaderboard-item">
+                        <span class="rank">3</span>
+                        <span class="student-id">Student 12</span>
+                        <span class="points">1,380 pts</span>
+                    </li>
+                    <li class="leaderboard-item">
+                        <span class="rank">4</span>
+                        <span class="student-id">Student 55</span>
+                        <span class="points">1,210 pts</span>
+                    </li>
+                    <li class="leaderboard-item">
+                        <span class="rank">5</span>
+                        <span class="student-id">Student 07</span>
+                        <span class="points">1,100 pts</span>
+                    </li>
+                </ul>
             </div>
         </div>
+
     </div>
 
-    <div class="duo-card" style="background-color: #fff9e6; border-color: #ffd900; box-shadow: 0 4px 0 #ffd900;">
-        <div class="section-label" style="color: #af8f00;">Reward Available</div>
-        <div style="font-weight: 800; font-size: 1.2em; margin-bottom: 15px;">One "Test Pass" Unlocked!</div>
-        <button class="duo-btn">Claim Now</button>
-    </div>
-
-    <div id="github-sync" class="sync-text">
-        Syncing with SurreyLearn repository...
+    <div class="system-footer" id="github-sync">
+        SurreyLearn Gamified Extension | Syncing repository data...
     </div>
 
 </div>
@@ -262,22 +321,19 @@
         const statusEl = document.getElementById('github-sync');
 
         try {
-            // Fetching commits to get the most accurate "Last Modified" time
             const response = await fetch(`https://api.github.com/repos/${username}/${repo}/commits`);
-            
             if (!response.ok) throw new Error();
-
+            
             const commits = await response.json();
             if (commits && commits.length > 0) {
                 const lastDate = new Date(commits[0].commit.committer.date);
-                statusEl.innerText = `Verified System Sync: ${lastDate.toLocaleDateString()} @ ${lastDate.toLocaleTimeString()}`;
+                statusEl.innerText = `SurreyLearn Gamified Extension | Last System Sync: ${lastDate.toLocaleDateString()}`;
             }
         } catch (error) {
-            statusEl.innerText = "System Offline | Local Identity Mode Active";
+            statusEl.innerText = "SurreyLearn Gamified Extension | Local Mode Active (Sync Unavailable)";
         }
     }
 
-    // Initialize sync on page load
     window.onload = fetchSystemUpdate;
 </script>
 
