@@ -1,214 +1,310 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Pixel Quest Dashboard</title>
-  <!-- Retro pixel font (Press Start 2P) -->
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-  <style>
-    body {
-      background-color: #000; /* dark background for neon theme */
-      color: #0f0;           /* neon green text */
-      font-family: 'Press Start 2P', cursive;
-      margin: 0; padding: 0;
-      text-shadow: 0 0 5px #0f0;
-    }
-    .dashboard {
-      position: relative;
-      padding: 20px;
-      margin: 20px;
-      border: 8px solid #39FF14; /* neon green border */
-    }
-    /* Pixel corner blocks (using ::before and ::after) */
-    .dashboard::before,
-    .dashboard::after {
-      content: "";
-      position: absolute;
-      width: 8px;
-      height: 8px;
-      background: #39FF14;
-    }
-    .dashboard::before { /* top-left corner block */
-      top: -8px;
-      left: -8px;
-    }
-    .dashboard::after {  /* bottom-right corner block */
-      bottom: -8px;
-      right: -8px;
-    }
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-    .player-info {
-      font-size: 1rem;
-    }
-    .progress-container {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-    progress {
-      width: 150px;
-      height: 10px;
-      accent-color: #0f0; /* neon green progress bar */
-    }
-    .content {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-    }
-    .game {
-      flex: 2 1 300px;
-      display: flex;
-      justify-content: center;
-    }
-    #pacman {
-      image-rendering: pixelated;
-      background-color: #000;
-      border: 4px solid #39FF14;
-      box-shadow: 0 0 10px #0f0;
-    }
-    .leaderboard {
-      flex: 1 1 200px;
-      background: rgba(0,0,0,0.8);
-      padding: 10px;
-      border: 4px solid #39FF14;
-      box-shadow: 0 0 10px #0f0;
-    }
-    .leaderboard h2, .rewards h2 {
-      margin: 0 0 10px 0;
-      font-size: 1rem;
-      text-shadow: 0 0 5px #0f0;
-    }
-    .leaderboard ol {
-      padding-left: 20px;
-    }
-    .rewards {
-      margin-top: 20px;
-      background: rgba(0,0,0,0.8);
-      padding: 10px;
-      border: 4px solid #39FF14;
-      box-shadow: 0 0 10px #0f0;
-    }
-    /* Responsive layout: stack on narrow screens */
-    @media (max-width: 600px) {
-      .content { flex-direction: column; }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SurreyLearn | Ultimate Pixel HUD</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-green: #39ff14;
+            --neon-pink: #ff00ff;
+            --neon-cyan: #00ffff;
+            --pixel-bg: #050505;
+            --panel-bg: rgba(0, 0, 0, 0.9);
+            --border-size: 4px;
+        }
+
+        * {
+            box-sizing: border-box;
+            image-rendering: pixelated;
+        }
+
+        body {
+            background-color: var(--pixel-bg);
+            color: white;
+            font-family: 'Press Start 2P', cursive;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            overflow-x: hidden;
+        }
+
+        /* --- Scanline & CRT Flicker Effect --- */
+        body::before {
+            content: " ";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            z-index: 1000;
+            background-size: 100% 3px, 3px 100%;
+            pointer-events: none;
+        }
+
+        .ultimate-wrapper {
+            width: 100%;
+            max-width: 1100px;
+            border: var(--border-size) solid var(--neon-green);
+            padding: 25px;
+            background: var(--panel-bg);
+            box-shadow: 0 0 20px rgba(57, 255, 20, 0.2);
+            position: relative;
+        }
+
+        /* Pixel Corner Accents */
+        .ultimate-wrapper::before { content: ""; position: absolute; top: -10px; left: -10px; width: 20px; height: 20px; background: var(--neon-green); }
+        .ultimate-wrapper::after { content: ""; position: absolute; bottom: -10px; right: -10px; width: 20px; height: 20px; background: var(--neon-green); }
+
+        /* --- HEADER SECTION --- */
+        .hud-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: var(--border-size) solid var(--neon-cyan);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .player-card { display: flex; align-items: center; gap: 20px; }
+        .avatar { 
+            font-size: 40px; 
+            border: var(--border-size) solid var(--neon-pink); 
+            padding: 10px; 
+            background: #111;
+            box-shadow: 4px 4px 0 var(--neon-pink);
+        }
+
+        .player-meta h1 { font-size: 16px; color: var(--neon-green); margin: 0; }
+        .player-meta p { font-size: 8px; color: #888; margin: 8px 0 0 0; }
+
+        /* --- GRID SYSTEM --- */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 900px) { .main-grid { grid-template-columns: 1fr; } }
+
+        .pixel-box {
+            border: var(--border-size) solid white;
+            padding: 15px;
+            background: #000;
+            margin-bottom: 10px;
+        }
+
+        .box-label { font-size: 8px; color: var(--neon-cyan); display: block; margin-bottom: 15px; }
+
+        /* --- PROGRESS BARS (FIXED) --- */
+        .bar-container {
+            width: 100%;
+            height: 25px;
+            background: #222;
+            border: 2px solid white;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .bar-fill {
+            height: 100%;
+            width: 0%;
+            transition: width 2s steps(10);
+        }
+
+        /* --- MINI-GAME ARENA --- */
+        .arena-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #pacman-canvas {
+            border: var(--border-size) solid var(--neon-green);
+            background: #000;
+            max-width: 100%;
+            height: auto;
+            box-shadow: 0 0 15px var(--neon-green);
+        }
+
+        /* --- LEADERBOARD --- */
+        .leader-table { width: 100%; font-size: 9px; border-collapse: collapse; }
+        .leader-table td { padding: 12px 5px; border-bottom: 1px solid #333; }
+        .row-active { color: var(--neon-cyan); background: rgba(0, 255, 255, 0.1); }
+
+        /* --- FINAL REWARD PANEL --- */
+        .boss-reward {
+            grid-column: span 3;
+            border-color: var(--neon-pink);
+            text-align: center;
+            background: linear-gradient(rgba(255, 0, 255, 0.05), transparent);
+        }
+        @media (max-width: 900px) { .boss-reward { grid-column: span 1; } }
+
+        .reward-title { color: var(--neon-pink); font-size: 14px; margin-bottom: 10px; display: block; }
+
+        /* --- FOOTER SYNC --- */
+        .system-footer {
+            margin-top: 30px;
+            font-size: 8px;
+            color: #444;
+            text-align: center;
+            line-height: 1.5;
+        }
+
+        .blink { animation: blinker 1.5s linear infinite; }
+        @keyframes blinker { 50% { opacity: 0; } }
+
+    </style>
 </head>
 <body>
-  <div class="dashboard">
-    <header class="header">
-      <div class="player-info">
-        Player: <span id="playerName">Jane Doe</span> 🦌
-      </div>
-      <div class="progress-container">
-        <label for="expProgress">Progress:</label>
-        <progress id="expProgress" value="40" max="100"></progress><span>40%</span>
-      </div>
+
+<div class="ultimate-wrapper">
+
+    <header class="hud-header">
+        <div class="player-card">
+            <div class="avatar">🦌</div>
+            <div class="player-meta">
+                <h1>PLAYER: STUDENT_42</h1>
+                <p>CLASS: ENG_LAB_2025</p>
+            </div>
+        </div>
+        <div style="text-align: right;">
+            <div style="font-size: 10px; color: var(--neon-pink);" class="blink">STREAK: 03 WEEKS</div>
+            <div style="font-size: 8px; color: #888; margin-top: 5px;">LVL 07 ACHIEVED</div>
+        </div>
     </header>
 
-    <div class="content">
-      <section class="game">
-        <canvas id="pacman" width="300" height="300"></canvas>
-      </section>
-      <aside class="leaderboard">
-        <h2>Leaderboard</h2>
-        <ol>
-          <li>1. Alpha - 1500</li>
-          <li>2. Bravo - 1200</li>
-          <li>3. Charlie - 900</li>
-        </ol>
-      </aside>
+    <div class="main-grid">
+        
+        <div class="column">
+            <div class="pixel-box">
+                <span class="box-label">Quartile Ascension</span>
+                <div style="font-size: 10px; margin-bottom: 5px;">CURRENT: Q2</div>
+                <div class="bar-container">
+                    <div class="bar-fill" id="q-bar" style="background: var(--neon-green);" data-val="75%"></div>
+                </div>
+                <div style="font-size: 7px; text-align: right; color: var(--neon-green);">75% TO RANK Q1</div>
+            </div>
+
+            <div class="pixel-box">
+                <span class="box-label">Level XP</span>
+                <div style="font-size: 10px; margin-bottom: 5px;">LVL 7</div>
+                <div class="bar-container">
+                    <div class="bar-fill" id="l-bar" style="background: var(--neon-cyan);" data-val="40%"></div>
+                </div>
+                <div style="font-size: 7px; text-align: right;">450 XP TO LVL 8</div>
+            </div>
+        </div>
+
+        <div class="arena-container">
+            <span class="box-label" style="margin-bottom: 10px;">Arena: Engagement_Loop</span>
+            <canvas id="pacman-canvas" width="300" height="250"></canvas>
+            <p style="font-size: 7px; color: #555; margin-top: 10px;">[ ARROWS TO MOVE PAC-MAN ]</p>
+        </div>
+
+        <div class="column">
+            <div class="pixel-box" style="height: 100%;">
+                <span class="box-label">Live Standings</span>
+                <table class="leader-table">
+                    <tr><td>01</td><td>STUDENT 89</td><td style="text-align:right">1620</td></tr>
+                    <tr class="row-active"><td>02</td><td>YOU (42)</td><td style="text-align:right">1450</td></tr>
+                    <tr><td>03</td><td>STUDENT 12</td><td style="text-align:right">1380</td></tr>
+                    <tr><td>04</td><td>STUDENT 55</td><td style="text-align:right">1210</td></tr>
+                    <tr><td>05</td><td>STUDENT 07</td><td style="text-align:right">1100</td></tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="pixel-box boss-reward">
+            <span class="reward-title">BOSS REWARD UNLOCK</span>
+            <div style="font-size: 11px; line-height: 1.6;">
+                REACH <span style="color:var(--neon-cyan)">LEVEL 10</span> TO ACTIVATE:<br>
+                <span style="color:var(--neon-green); font-size: 18px; display: block; margin-top: 10px;">+5% EXAM SCORE BUFF</span>
+            </div>
+        </div>
+
     </div>
 
-    <footer class="rewards">
-      <h2>Rewards</h2>
-      <ul>
-        <li>🧮 Math Wizard Badge</li>
-        <li>🌟 500 XP</li>
-        <li>🥇 1st Quest Trophy</li>
-      </ul>
+    <footer class="system-footer">
+        REPO_ID: OSK03_FY-06867178 // STATUS: <span id="sync-text">SYNCING...</span><br>
+        2025 SURREY_NET // PIXEL_OS V1.0.4
     </footer>
-  </div>
 
-  <script>
-    // Canvas Pac-Man style mini-game
-    const canvas = document.getElementById('pacman');
+</div>
+
+<script>
+    // --- PAC-MAN GAME LOGIC ---
+    const canvas = document.getElementById('pacman-canvas');
     const ctx = canvas.getContext('2d');
     const W = canvas.width, H = canvas.height;
 
-    // Pac-Man setup
-    let pac = { x: W/2, y: H/2, r: 15, dx: 2, dy: 2 };
+    let pac = { x: W/2, y: H/2, r: 12, dx: 0, dy: 0, mouth: 0 };
+    let pellets = [];
+    for(let i=0; i<10; i++) pellets.push({ x: Math.random()*(W-20)+10, y: Math.random()*(H-20)+10 });
 
-    // Random dots (pellets)
-    let dots = [];
-    for (let i = 0; i < 8; i++) {
-      dots.push({ x: Math.random()*(W-20)+10, y: Math.random()*(H-20)+10 });
+    function drawGame() {
+        ctx.fillStyle = "black";
+        ctx.fillRect(0,0,W,H);
+        
+        // Pellets (XP Dots)
+        ctx.fillStyle = "white";
+        pellets.forEach(p => ctx.fillRect(p.x, p.y, 4, 4));
+
+        // Pacman
+        ctx.fillStyle = "yellow";
+        ctx.beginPath();
+        let angle = (pac.dx > 0) ? 0 : (pac.dx < 0) ? Math.PI : (pac.dy > 0) ? 0.5*Math.PI : 1.5*Math.PI;
+        ctx.arc(pac.x, pac.y, pac.r, angle + 0.2, angle + 2*Math.PI - 0.2);
+        ctx.lineTo(pac.x, pac.y);
+        ctx.fill();
+
+        // Movement
+        pac.x += pac.dx; pac.y += pac.dy;
+        if(pac.x < 0) pac.x = W; if(pac.x > W) pac.x = 0;
+        if(pac.y < 0) pac.y = H; if(pac.y > H) pac.y = 0;
+
+        // Eat Logic
+        pellets = pellets.filter(p => Math.hypot(pac.x - p.x, pac.y - p.y) > pac.r);
+        if(pellets.length === 0) {
+             for(let i=0; i<10; i++) pellets.push({ x: Math.random()*(W-20)+10, y: Math.random()*(H-20)+10 });
+        }
+
+        requestAnimationFrame(drawGame);
     }
 
-    // A simple ghost enemy
-    let ghost = { x: 50, y: 50, size: 20, dx: 1.5, dy: 1.2, color: 'red' };
-
-    function drawPacman() {
-      ctx.fillStyle = 'yellow';
-      ctx.beginPath();
-      ctx.arc(pac.x, pac.y, pac.r, 0.25*Math.PI, 1.75*Math.PI);
-      ctx.lineTo(pac.x, pac.y);
-      ctx.fill();
-    }
-    function drawGhost() {
-      ctx.fillStyle = ghost.color;
-      ctx.beginPath();
-      ctx.arc(ghost.x, ghost.y, ghost.size/2, Math.PI, 0);
-      ctx.fill();
-      ctx.fillRect(ghost.x-ghost.size/2, ghost.y, ghost.size, ghost.size/2);
-    }
-    function update() {
-      // Move Pac-Man
-      pac.x += pac.dx;
-      pac.y += pac.dy;
-      // Bounce off walls
-      if (pac.x - pac.r < 0 || pac.x + pac.r > W) pac.dx *= -1;
-      if (pac.y - pac.r < 0 || pac.y + pac.r > H) pac.dy *= -1;
-      // Move ghost
-      ghost.x += ghost.dx;
-      ghost.y += ghost.dy;
-      if (ghost.x < 0 || ghost.x > W) ghost.dx *= -1;
-      if (ghost.y < 0 || ghost.y > H) ghost.dy *= -1;
-      // Eat dots
-      dots = dots.filter(dot => {
-        const dist = Math.hypot(pac.x - dot.x, pac.y - dot.y);
-        return dist > pac.r; // if within Pac-Man radius, dot disappears
-      });
-    }
-    function draw() {
-      ctx.clearRect(0, 0, W, H);
-      // Draw dots
-      ctx.fillStyle = '#fff';
-      dots.forEach(dot => ctx.fillRect(dot.x-3, dot.y-3, 6, 6));
-      // Draw Pac-Man and ghost
-      drawPacman();
-      drawGhost();
-    }
-    function loop() {
-      update();
-      draw();
-      requestAnimationFrame(loop);
-    }
-    // Arrow key control for Pac-Man
     window.addEventListener('keydown', e => {
-      const speed = 2;
-      if (e.key === 'ArrowUp')    { pac.dx = 0;      pac.dy = -speed; }
-      if (e.key === 'ArrowDown')  { pac.dx = 0;      pac.dy = speed; }
-      if (e.key === 'ArrowLeft')  { pac.dx = -speed; pac.dy = 0;     }
-      if (e.key === 'ArrowRight') { pac.dx = speed;  pac.dy = 0;     }
+        const s = 2;
+        if(e.key === 'ArrowUp') { pac.dx = 0; pac.dy = -s; }
+        if(e.key === 'ArrowDown') { pac.dx = 0; pac.dy = s; }
+        if(e.key === 'ArrowLeft') { pac.dx = -s; pac.dy = 0; }
+        if(e.key === 'ArrowRight') { pac.dx = s; pac.dy = 0; }
     });
-    loop();
-  </script>
+
+    // --- SYSTEM LOGIC ---
+    window.onload = () => {
+        drawGame();
+
+        // Animate Bars
+        setTimeout(() => {
+            const q = document.getElementById('q-bar');
+            const l = document.getElementById('l-bar');
+            q.style.width = q.getAttribute('data-val');
+            l.style.width = l.getAttribute('data-val');
+        }, 500);
+
+        // GitHub Sync
+        fetch('https://api.github.com/repos/OSK03/FY-06867178/commits')
+            .then(res => res.json())
+            .then(data => {
+                const date = new Date(data[0].commit.committer.date).toLocaleDateString();
+                document.getElementById('sync-text').innerText = `STABLE // LAST_PUSH: ${date}`;
+            })
+            .catch(() => { document.getElementById('sync-text').innerText = "LOCAL_CACHE"; });
+    };
+</script>
+
 </body>
-</html>     
+</html>
