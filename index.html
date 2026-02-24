@@ -3,295 +3,325 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>SurreyLearn | Ultra-Modern Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+    <title>SurreyHUD // Academic Arena</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --dark-bg: #030712;
-            --glass-bg: rgba(17, 24, 39, 0.7);
-            --neon-blue: #3b82f6;
-            --neon-glow: rgba(59, 130, 246, 0.5);
-            --neon-gold: #fbbf24;
-            --text-primary: #f9fafb;
-            --text-secondary: #9ca3af;
-            --accent-border: rgba(255, 255, 255, 0.1);
-            --radius: 24px;
+            --neon-cyan: #00f3ff;
+            --neon-pink: #ff00ff;
+            --neon-purple: #bc13fe;
+            --dark-void: #050505;
+            --panel-bg: rgba(20, 20, 25, 0.85);
+            --border-glow: rgba(0, 243, 255, 0.3);
         }
 
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--dark-bg);
-            background-image: 
-                radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(251, 191, 36, 0.08) 0%, transparent 40%);
-            color: var(--text-primary);
+            background-color: var(--dark-void);
+            color: white;
+            font-family: 'Rajdhani', sans-serif;
             margin: 0;
-            padding: 40px 20px;
-            display: flex;
-            justify-content: center;
             overflow-x: hidden;
+            background-image: 
+                linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+                linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 4px, 3px 100%; /* CRT Scanline Effect */
         }
 
-        /* Moving Hex-Grid Background Effect */
-        body::before {
+        /* Ambient Glow Background */
+        body::after {
             content: "";
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
-            opacity: 0.1;
+            background: radial-gradient(circle at 50% 50%, rgba(188, 19, 254, 0.1) 0%, transparent 80%);
+            pointer-events: none;
             z-index: -1;
         }
 
-        .dashboard-container {
-            max-width: 1100px;
-            width: 100%;
-            animation: slideUp 1s cubic-bezier(0.16, 1, 0.3, 1);
+        .hud-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            animation: bootUp 1.5s ease-out;
         }
 
-        /* --- Header: Futuristic Glassmorphism --- */
-        .glass-header {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--accent-border);
-            border-radius: var(--radius);
-            padding: 30px 40px;
+        /* --- TOP HUD BAR --- */
+        .top-hud {
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            margin-bottom: 30px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            align-items: center;
+            border-bottom: 2px solid var(--neon-cyan);
+            padding-bottom: 10px;
+            margin-bottom: 40px;
+            filter: drop-shadow(0 0 10px var(--border-glow));
         }
 
-        .profile-section { display: flex; align-items: center; gap: 20px; }
+        .player-info { display: flex; align-items: center; gap: 20px; }
         
-        .mascot-ring {
-            width: 80px; height: 80px;
-            border-radius: 20px;
-            background: linear-gradient(135deg, var(--neon-blue), #1e40af);
+        .spirit-stag {
+            width: 70px; height: 70px;
+            background: black;
+            border: 2px solid var(--neon-cyan);
+            clip-path: polygon(20% 0%, 80% 0%, 100% 20%, 100% 80%, 80% 100%, 20% 100%, 0% 80%, 0% 20%);
             display: flex; align-items: center; justify-content: center;
-            font-size: 40px;
-            transform: rotate(-5deg);
-            box-shadow: 0 0 20px var(--neon-glow);
-            border: 2px solid rgba(255,255,255,0.2);
+            font-size: 35px;
+            text-shadow: 0 0 15px var(--neon-cyan);
         }
 
-        .header-info h1 { margin: 0; font-size: 26px; font-weight: 800; letter-spacing: -1px; }
-        .header-info span { color: var(--neon-blue); font-family: 'JetBrains Mono', monospace; font-size: 14px; }
-
-        .stat-pill {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid var(--accent-border);
-            padding: 10px 20px;
-            border-radius: 100px;
-            display: flex; align-items: center; gap: 10px;
+        .glitch-text {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-transform: uppercase;
         }
 
-        /* --- Bento Layout --- */
-        .bento-grid {
+        /* --- BENTO QUEST GRID --- */
+        .quest-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            grid-template-rows: auto auto;
-            gap: 20px;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
         }
 
-        .bento-card {
-            background: var(--glass-bg);
+        .panel {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-glow);
+            border-radius: 4px; /* Hard gaming edges */
+            padding: 25px;
+            position: relative;
             backdrop-filter: blur(10px);
-            border: 1px solid var(--accent-border);
-            border-radius: var(--radius);
-            padding: 30px;
-            transition: all 0.4s ease;
         }
 
-        .bento-card:hover {
-            border-color: var(--neon-blue);
-            box-shadow: 0 0 30px rgba(59, 130, 246, 0.15);
-            transform: translateY(-5px);
+        /* Corner Accents */
+        .panel::before {
+            content: ""; position: absolute; top: -2px; left: -2px; width: 20px; height: 20px;
+            border-top: 3px solid var(--neon-cyan); border-left: 3px solid var(--neon-cyan);
         }
 
-        /* --- Neon Progress Bar --- */
-        .big-stat { font-size: 50px; font-weight: 800; margin: 10px 0; color: var(--text-primary); }
+        .header-tag {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 12px;
+            color: var(--neon-cyan);
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        /* --- HEALTH / PROGRESS BARS --- */
+        .stat-label { display: flex; justify-content: space-between; margin-bottom: 8px; font-weight: bold; }
         
-        .progress-track {
+        .bar-container {
             background: rgba(255,255,255,0.05);
-            height: 12px; border-radius: 100px; overflow: hidden; margin-top: 20px;
+            height: 24px;
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            padding: 2px;
+            margin-bottom: 20px;
         }
 
-        .progress-fill {
-            height: 100%; width: 0%;
-            background: linear-gradient(90deg, var(--neon-blue), #60a5fa);
-            box-shadow: 0 0 15px var(--neon-blue);
-            transition: width 2s cubic-bezier(0.19, 1, 0.22, 1);
+        .bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--neon-purple), var(--neon-cyan));
+            transition: width 2s cubic-bezier(0.1, 1, 0.1, 1);
+            position: relative;
         }
 
-        /* --- Milestone Node Line --- */
-        .node-track {
-            display: flex; justify-content: space-between; margin-top: 40px; position: relative;
+        .bar-fill::after {
+            content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: shine 3s infinite;
         }
 
-        .node-track::after {
-            content: ""; position: absolute; top: 50%; left: 0; width: 100%; height: 2px;
-            background: rgba(255,255,255,0.1); z-index: 0;
-        }
-
-        .node {
-            width: 40px; height: 40px; border-radius: 12px; background: #1f2937;
-            border: 2px solid var(--accent-border); z-index: 1;
-            display: flex; align-items: center; justify-content: center;
-            font-weight: bold; font-family: 'JetBrains Mono', monospace;
+        /* --- ARENA RANKINGS --- */
+        .rankings { list-style: none; padding: 0; margin: 0; }
+        .rank-row {
+            display: flex; align-items: center; padding: 12px;
+            border-left: 3px solid transparent;
+            margin-bottom: 5px;
+            background: rgba(255,255,255,0.02);
             transition: 0.3s;
         }
 
-        .node.active { background: var(--neon-blue); border-color: white; box-shadow: 0 0 15px var(--neon-blue); color: white; }
-        .node.goal { border-color: var(--neon-gold); color: var(--neon-gold); }
-
-        /* --- Leaderboard Dark Style --- */
-        .rank-row {
-            display: flex; align-items: center; padding: 15px;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            transition: 0.2s;
+        .rank-row:hover {
+            background: rgba(0, 243, 255, 0.1);
+            border-left: 3px solid var(--neon-cyan);
+            transform: translateX(10px);
         }
-        
-        .rank-row:hover { background: rgba(255,255,255,0.03); border-radius: 12px; }
-
-        .rank-id { width: 40px; font-family: 'JetBrains Mono', monospace; color: var(--text-secondary); }
-        .student-name { flex: 1; font-weight: 600; }
-        .points-tag { color: var(--neon-blue); font-weight: 800; font-size: 14px; }
 
         .user-highlight {
-            background: rgba(59, 130, 246, 0.1);
-            border: 1px solid var(--neon-blue);
-            border-radius: 12px;
+            background: rgba(188, 19, 254, 0.2) !important;
+            border-left: 3px solid var(--neon-pink) !important;
+            box-shadow: inset 0 0 15px rgba(255, 0, 255, 0.2);
         }
 
-        /* --- Reward Panel --- */
-        .reward-panel {
+        /* --- PASSIVE SKILL (EXAM BOOST) --- */
+        .skill-card {
             grid-column: span 2;
-            background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), transparent);
-            border: 1px solid rgba(251, 191, 36, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            border: 1px solid var(--neon-pink);
+            background: linear-gradient(90deg, rgba(255, 0, 255, 0.1), transparent);
         }
 
-        .reward-panel h3 { color: var(--neon-gold); margin-top: 0; display: flex; align-items: center; gap: 10px; }
+        .skill-icon {
+            font-size: 50px; color: var(--neon-pink);
+            filter: drop-shadow(0 0 10px var(--neon-pink));
+        }
 
-        /* --- Animations --- */
-        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        /* --- BUTTONS --- */
+        .btn-launch {
+            background: transparent;
+            border: 2px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            font-family: 'Orbitron', sans-serif;
+            padding: 15px 30px;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-weight: bold;
+            transition: 0.3s;
+            width: 100%;
+            margin-top: 20px;
+        }
 
+        .btn-launch:hover {
+            background: var(--neon-cyan);
+            color: black;
+            box-shadow: 0 0 30px var(--neon-cyan);
+        }
+
+        /* --- ANIMATIONS --- */
+        @keyframes bootUp {
+            0% { opacity: 0; transform: scale(0.95); filter: brightness(5); }
+            100% { opacity: 1; transform: scale(1); filter: brightness(1); }
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .pulse { animation: neonPulse 2s infinite; }
+        @keyframes neonPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
     </style>
 </head>
 <body>
 
-<div class="dashboard-container">
+<div class="hud-wrapper">
 
-    <header class="glass-header">
-        <div class="profile-section">
-            <div class="mascot-ring">🦌</div>
-            <div class="header-info">
-                <span>SYSTEM_USER // SESSION_42</span>
-                <h1>Welcome back, Student 42</h1>
+    <header class="top-hud">
+        <div class="player-info">
+            <div class="spirit-stag">🦌</div>
+            <div>
+                <div class="glitch-text" style="font-size: 24px; color: var(--neon-cyan);">Student_42</div>
+                <div style="font-family: monospace; font-size: 12px; color: var(--neon-purple);">RANK: QUARTILE_02 // SYSTEM: ONLINE</div>
             </div>
         </div>
-        <div class="stat-pill">
-            <span style="color: #ef4444;">🔥</span>
-            <span style="font-weight: 800;">3 WEEK STREAK</span>
+        <div style="text-align: right;">
+            <div class="header-tag" style="margin: 0;">Weekly Quest Streak</div>
+            <div class="glitch-text" style="font-size: 28px; color: var(--neon-pink);">🔥 03 WKS</div>
         </div>
     </header>
 
-    <div class="bento-grid">
+    <div class="quest-grid">
         
-        <div class="bento-card">
-            <div style="font-size: 12px; font-weight: 700; color: var(--text-secondary); letter-spacing: 2px;">MODULE_RANK</div>
-            <div class="big-stat">Q2</div>
-            <p style="font-size: 14px; color: var(--text-secondary);">Position: 14 / 120 Students</p>
-            <div class="progress-track">
-                <div class="progress-fill" id="p1" data-val="75%"></div>
-            </div>
-            <p style="font-size: 12px; margin-top: 10px; color: var(--neon-blue);">75% XP TO Q1 ASCENSION</p>
-        </div>
-
-        <div class="bento-card" style="grid-row: span 2;">
-            <div style="font-size: 12px; font-weight: 700; color: var(--text-secondary); letter-spacing: 2px; margin-bottom: 20px;">COHORT_LIVE_FEED</div>
+        <div class="panel">
+            <span class="header-tag">Engagement XP Progression</span>
             
-            <div class="rank-row">
-                <div class="rank-id">01</div>
-                <div class="student-name">Student 89</div>
-                <div class="points-tag">1,620 XP</div>
+            <div class="stat-label">
+                <span>QUARTILE ASCENSION</span>
+                <span style="color: var(--neon-cyan);">75%</span>
             </div>
-            <div class="rank-row user-highlight">
-                <div class="rank-id">02</div>
-                <div class="student-name">Student 42 (You)</div>
-                <div class="points-tag">1,450 XP</div>
+            <div class="bar-container">
+                <div class="bar-fill" id="quartile-bar" data-val="75%"></div>
             </div>
-            <div class="rank-row">
-                <div class="rank-id">03</div>
-                <div class="student-name">Student 12</div>
-                <div class="points-tag">1,380 XP</div>
-            </div>
-            <div class="rank-row">
-                <div class="rank-id">04</div>
-                <div class="student-name">Student 55</div>
-                <div class="points-tag">1,210 XP</div>
-            </div>
-            <div class="rank-row">
-                <div class="rank-id">05</div>
-                <div class="student-name">Student 07</div>
-                <div class="points-tag">1,100 XP</div>
-            </div>
-        </div>
 
-        <div class="bento-card">
-            <div style="font-size: 12px; font-weight: 700; color: var(--text-secondary); letter-spacing: 2px;">LEVEL_PATHWAY</div>
-            <div class="big-stat" style="color: var(--neon-gold);">LVL 7</div>
-            <div class="progress-track" style="height: 6px;">
-                <div class="progress-fill" style="background: var(--neon-gold); width: 40%; box-shadow: 0 0 10px var(--neon-gold);"></div>
+            <div class="stat-label" style="margin-top: 30px;">
+                <span>PLAYER LEVEL [LEVEL 07]</span>
+                <span style="color: var(--neon-pink);">XP TO LVL 08: 450</span>
             </div>
-            <div class="node-track">
-                <div class="node active">6</div>
-                <div class="node active">7</div>
-                <div class="node">8</div>
-                <div class="node">9</div>
-                <div class="node goal">10</div>
+            <div class="bar-container" style="height: 12px;">
+                <div class="bar-fill" style="width: 45%; background: var(--neon-pink);"></div>
             </div>
-        </div>
 
-        <div class="bento-card reward-panel">
-            <h3><span>🏆</span> ACHIEVEMENT_UNLOCKED: GRADE_RESERVE</h3>
-            <p style="color: var(--text-secondary); line-height: 1.6;">
-                You are currently on track for the <strong style="color: white;">Level 10 Milestone</strong>. 
-                Sustain this engagement level to apply a <span style="color: var(--neon-gold); font-weight: 800;">5% BOOST</span> to your final Mathematics examination.
+            <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.6; border-left: 2px solid var(--neon-cyan); padding-left: 15px;">
+                > ENGAGEMENT LOG: 14 tasks completed this cycle. <br>
+                > Current trajectory leads to <span style="color: var(--neon-cyan);">QUARTILE 01</span> in approx. 6 days.
             </p>
-            <div style="margin-top: 20px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--neon-blue);">
-                > ESTIMATED_REACH: 14 DAYS
+
+            <button class="btn-launch">Resume Quest Log_</button>
+        </div>
+
+        <div class="panel">
+            <span class="header-tag">Arena Standings // Q2</span>
+            
+            <div class="rankings">
+                <div class="rank-row">
+                    <span style="width: 30px; font-family: monospace;">01</span>
+                    <span style="flex: 1;">Student_89</span>
+                    <span class="points-tag">1,620 XP</span>
+                </div>
+                <div class="rank-row user-highlight">
+                    <span style="width: 30px; font-family: monospace;">02</span>
+                    <span style="flex: 1;">Student_42 [YOU]</span>
+                    <span class="points-tag">1,450 XP</span>
+                </div>
+                <div class="rank-row">
+                    <span style="width: 30px; font-family: monospace;">03</span>
+                    <span style="flex: 1;">Student_12</span>
+                    <span class="points-tag">1,380 XP</span>
+                </div>
+                <div class="rank-row">
+                    <span style="width: 30px; font-family: monospace;">04</span>
+                    <span style="flex: 1;">Student_55</span>
+                    <span class="points-tag">1,210 XP</span>
+                </div>
+                <div class="rank-row">
+                    <span style="width: 30px; font-family: monospace;">05</span>
+                    <span style="flex: 1;">Student_07</span>
+                    <span class="points-tag">1,100 XP</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel skill-card">
+            <div class="skill-icon">🏆</div>
+            <div>
+                <span class="header-tag" style="color: var(--neon-pink);">Legendary Passive Skill: Exam Fortitude</span>
+                <h2 style="margin: 5px 0; font-family: 'Orbitron'; letter-spacing: 1px;">5% EXAM SCORE BOOST</h2>
+                <p style="margin: 0; color: var(--text-secondary); opacity: 0.8;">
+                    STATUS: <span class="pulse" style="color: var(--neon-pink); font-weight: bold;">LOCKING AT LEVEL 10</span>. 
+                    Unlock this buff to apply a permanent +5% modifier to your final module assessment.
+                </p>
             </div>
         </div>
 
     </div>
 
-    <footer style="margin-top: 40px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-secondary); letter-spacing: 1px;">
-        GITHUB_SYNC // REPO: FY-06867178 // STATUS: <span id="sync-status" style="color: var(--neon-blue);">ESTABLISHING_LINK...</span>
+    <footer style="margin-top: 40px; font-family: monospace; font-size: 11px; opacity: 0.5; display: flex; justify-content: space-between;">
+        <span>>> CONNECTION_STABLE: SURREY_NET_V2.0</span>
+        <span id="sync-info">GITHUB_SYNC: FETCHING_DATA...</span>
     </footer>
 
 </div>
 
 <script>
-    // Progressive Animation trigger
     window.onload = () => {
-        // Animate the progress bar
+        // Animate Bars
         setTimeout(() => {
-            const bar = document.getElementById('p1');
+            const bar = document.getElementById('quartile-bar');
             bar.style.width = bar.getAttribute('data-val');
         }, 500);
 
-        // Fetch GitHub Sync Data
-        const syncStatus = document.getElementById('sync-status');
-        fetch(`https://api.github.com/repos/OSK03/FY-06867178/commits`)
+        // Fetch Real GitHub Sync
+        const syncEl = document.getElementById('sync-info');
+        fetch('https://api.github.com/repos/OSK03/FY-06867178/commits')
             .then(res => res.json())
             .then(data => {
-                const lastSync = new Date(data[0].commit.committer.date).toLocaleDateString();
-                syncStatus.innerText = `LINK_STABLE // LAST_PUSH: ${lastSync}`;
+                const date = new Date(data[0].commit.committer.date).toLocaleDateString();
+                syncEl.innerText = `LINK_STABLE // LAST_ENCRYPTION: ${date}`;
             })
-            .catch(() => {
-                syncStatus.innerText = "LOCAL_CACHE_MODE";
-            });
+            .catch(() => { syncEl.innerText = "OFFLINE_MODE // LOCAL_CACHE_ONLY"; });
     };
 </script>
 
