@@ -3,22 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>SurreyLearn | Ultimate Pixel HUD</title>
+    <title>LEGO Star Quest | SurreyLearn</title>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
         :root {
-            --neon-green: #39ff14;
-            --neon-pink: #ff00ff;
-            --neon-cyan: #00ffff;
-            --pixel-bg: #050505;
-            --panel-bg: rgba(0, 0, 0, 0.9);
+            --pixel-blue: #00bfff;
+            --deep-blue: #003366;
+            --electric-blue: #1e90ff;
+            --light-blue: #66ccff;
+            --pixel-bg: #020617;
+            --panel-bg: rgba(5, 20, 40, 0.95);
+            --lego-yellow: #facc15;
             --border-size: 4px;
         }
 
-        * {
-            box-sizing: border-box;
-            image-rendering: pixelated;
-        }
+        * { box-sizing: border-box; image-rendering: pixelated; }
 
         body {
             background-color: var(--pixel-bg);
@@ -27,283 +26,329 @@
             margin: 0;
             padding: 20px;
             display: flex;
-            justify-content: center;
-            overflow-x: hidden;
+            flex-direction: column;
+            align-items: center;
+            overflow: hidden;
         }
 
-        /* --- Scanline & CRT Flicker Effect --- */
+        /* --- CRT Scanline Overlay --- */
         body::before {
             content: " ";
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), 
-                        linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
-            z-index: 1000;
+                        linear-gradient(90deg, rgba(0, 0, 255, 0.05), rgba(0, 255, 255, 0.02), rgba(0, 0, 255, 0.05));
+            z-index: 2000;
             background-size: 100% 3px, 3px 100%;
             pointer-events: none;
         }
 
-        .ultimate-wrapper {
+        .hud-top {
             width: 100%;
-            max-width: 1100px;
-            border: var(--border-size) solid var(--neon-green);
-            padding: 25px;
-            background: var(--panel-bg);
-            box-shadow: 0 0 20px rgba(57, 255, 20, 0.2);
-            position: relative;
-        }
-
-        /* Pixel Corner Accents */
-        .ultimate-wrapper::before { content: ""; position: absolute; top: -10px; left: -10px; width: 20px; height: 20px; background: var(--neon-green); }
-        .ultimate-wrapper::after { content: ""; position: absolute; bottom: -10px; right: -10px; width: 20px; height: 20px; background: var(--neon-green); }
-
-        /* --- HEADER SECTION --- */
-        .hud-header {
+            max-width: 800px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: var(--border-size) solid var(--neon-cyan);
-            padding-bottom: 20px;
-            margin-bottom: 30px;
-        }
-
-        .player-card { display: flex; align-items: center; gap: 20px; }
-        .avatar { 
-            font-size: 40px; 
-            border: var(--border-size) solid var(--neon-pink); 
-            padding: 10px; 
-            background: #111;
-            box-shadow: 4px 4px 0 var(--neon-pink);
-        }
-
-        .player-meta h1 { font-size: 16px; color: var(--neon-green); margin: 0; }
-        .player-meta p { font-size: 8px; color: #888; margin: 8px 0 0 0; }
-
-        /* --- GRID SYSTEM --- */
-        .main-grid {
-            display: grid;
-            grid-template-columns: 1fr 1.2fr 1fr;
-            gap: 20px;
-        }
-
-        @media (max-width: 900px) { .main-grid { grid-template-columns: 1fr; } }
-
-        .pixel-box {
-            border: var(--border-size) solid white;
+            border: var(--border-size) solid var(--pixel-blue);
             padding: 15px;
-            background: #000;
+            background: var(--panel-bg);
             margin-bottom: 10px;
         }
 
-        .box-label { font-size: 8px; color: var(--neon-cyan); display: block; margin-bottom: 15px; }
+        .stat-group { display: flex; flex-direction: column; gap: 5px; }
+        .stat-label { font-size: 8px; color: var(--light-blue); }
+        .stat-val { font-size: 10px; color: white; }
 
-        /* --- PROGRESS BARS (FIXED) --- */
-        .bar-container {
-            width: 100%;
-            height: 25px;
-            background: #222;
-            border: 2px solid white;
-            overflow: hidden;
-            margin: 10px 0;
+        /* --- GAME CONTAINER --- */
+        #game-container {
+            position: relative;
+            border: var(--border-size) solid var(--pixel-blue);
+            box-shadow: 0 0 20px var(--deep-blue);
+            background: #000;
         }
 
-        .bar-fill {
-            height: 100%;
-            width: 0%;
-            transition: width 2s steps(10);
-        }
+        canvas { display: block; background: #000; }
 
-        /* --- MINI-GAME ARENA --- */
-        .arena-container {
-            display: flex;
+        /* --- UI PROGRESS BARS --- */
+        .progress-wrapper { width: 150px; height: 16px; background: #111; border: 2px solid white; position: relative; }
+        .progress-fill { height: 100%; width: 0%; background: var(--pixel-blue); transition: width 1.5s steps(20); }
+
+        /* --- QUIZ OVERLAY --- */
+        #quiz-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--panel-bg);
+            display: none;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-        }
-
-        #pacman-canvas {
-            border: var(--border-size) solid var(--neon-green);
-            background: #000;
-            max-width: 100%;
-            height: auto;
-            box-shadow: 0 0 15px var(--neon-green);
-        }
-
-        /* --- LEADERBOARD --- */
-        .leader-table { width: 100%; font-size: 9px; border-collapse: collapse; }
-        .leader-table td { padding: 12px 5px; border-bottom: 1px solid #333; }
-        .row-active { color: var(--neon-cyan); background: rgba(0, 255, 255, 0.1); }
-
-        /* --- FINAL REWARD PANEL --- */
-        .boss-reward {
-            grid-column: span 3;
-            border-color: var(--neon-pink);
             text-align: center;
-            background: linear-gradient(rgba(255, 0, 255, 0.05), transparent);
-        }
-        @media (max-width: 900px) { .boss-reward { grid-column: span 1; } }
-
-        .reward-title { color: var(--neon-pink); font-size: 14px; margin-bottom: 10px; display: block; }
-
-        /* --- FOOTER SYNC --- */
-        .system-footer {
-            margin-top: 30px;
-            font-size: 8px;
-            color: #444;
-            text-align: center;
-            line-height: 1.5;
+            padding: 20px;
+            z-index: 100;
         }
 
-        .blink { animation: blinker 1.5s linear infinite; }
-        @keyframes blinker { 50% { opacity: 0; } }
+        .quiz-box { border: var(--border-size) solid var(--pixel-blue); padding: 20px; background: #000; width: 80%; }
+        .question-text { font-size: 12px; margin-bottom: 20px; line-height: 1.6; color: var(--light-blue); }
+        .answer-input { 
+            background: transparent; border: 2px solid white; color: white; 
+            font-family: 'Press Start 2P'; padding: 10px; width: 100px; text-align: center; margin-bottom: 20px;
+        }
+        .btn { 
+            background: var(--deep-blue); color: white; padding: 10px 20px; border: 2px solid var(--pixel-blue);
+            cursor: pointer; font-family: 'Press Start 2P'; font-size: 10px;
+        }
+        .btn:hover { background: var(--pixel-blue); }
+
+        .interaction-prompt {
+            position: absolute; bottom: 20px; width: 100%; text-align: center;
+            font-size: 8px; color: var(--pixel-blue); animation: blink 1s infinite;
+        }
+
+        @keyframes blink { 50% { opacity: 0; } }
+        
+        /* Floating XP Effect */
+        .xp-float {
+            position: absolute; color: var(--pixel-blue); font-size: 10px;
+            animation: floatUp 1.5s forwards; pointer-events: none;
+        }
+        @keyframes floatUp { from { transform: translateY(0); opacity: 1; } to { transform: translateY(-50px); opacity: 0; } }
 
     </style>
 </head>
 <body>
 
-<div class="ultimate-wrapper">
-
-    <header class="hud-header">
-        <div class="player-card">
-            <div class="avatar">🦌</div>
-            <div class="player-meta">
-                <h1>PLAYER: STUDENT_42</h1>
-                <p>CLASS: ENG_LAB_2025</p>
+    <div class="hud-top">
+        <div class="stat-group">
+            <span class="stat-label">PADAWAN_ALIAS</span>
+            <span class="stat-val">STUDENT_42</span>
+        </div>
+        <div class="stat-group">
+            <span class="stat-label">QUARTILE ASCENSION</span>
+            <div class="progress-wrapper">
+                <div id="q-bar" class="progress-fill"></div>
+            </div>
+            <span id="q-text" style="font-size: 7px; color: var(--pixel-blue);">RANK: Q4</span>
+        </div>
+        <div class="stat-group">
+            <span class="stat-label">XP LEVEL: <span id="lvl-text">7</span></span>
+            <div class="progress-wrapper">
+                <div id="xp-bar" class="progress-fill" style="background: var(--lego-yellow);"></div>
             </div>
         </div>
-        <div style="text-align: right;">
-            <div style="font-size: 10px; color: var(--neon-pink);" class="blink">STREAK: 03 WEEKS</div>
-            <div style="font-size: 8px; color: #888; margin-top: 5px;">LVL 07 ACHIEVED</div>
-        </div>
-    </header>
-
-    <div class="main-grid">
-        
-        <div class="column">
-            <div class="pixel-box">
-                <span class="box-label">Quartile Ascension</span>
-                <div style="font-size: 10px; margin-bottom: 5px;">CURRENT: Q2</div>
-                <div class="bar-container">
-                    <div class="bar-fill" id="q-bar" style="background: var(--neon-green);" data-val="75%"></div>
-                </div>
-                <div style="font-size: 7px; text-align: right; color: var(--neon-green);">75% TO RANK Q1</div>
-            </div>
-
-            <div class="pixel-box">
-                <span class="box-label">Level XP</span>
-                <div style="font-size: 10px; margin-bottom: 5px;">LVL 7</div>
-                <div class="bar-container">
-                    <div class="bar-fill" id="l-bar" style="background: var(--neon-cyan);" data-val="40%"></div>
-                </div>
-                <div style="font-size: 7px; text-align: right;">450 XP TO LVL 8</div>
-            </div>
-        </div>
-
-        <div class="arena-container">
-            <span class="box-label" style="margin-bottom: 10px;">Arena: Engagement_Loop</span>
-            <canvas id="pacman-canvas" width="300" height="250"></canvas>
-            <p style="font-size: 7px; color: #555; margin-top: 10px;">[ ARROWS TO MOVE PAC-MAN ]</p>
-        </div>
-
-        <div class="column">
-            <div class="pixel-box" style="height: 100%;">
-                <span class="box-label">Live Standings</span>
-                <table class="leader-table">
-                    <tr><td>01</td><td>STUDENT 89</td><td style="text-align:right">1620</td></tr>
-                    <tr class="row-active"><td>02</td><td>YOU (42)</td><td style="text-align:right">1450</td></tr>
-                    <tr><td>03</td><td>STUDENT 12</td><td style="text-align:right">1380</td></tr>
-                    <tr><td>04</td><td>STUDENT 55</td><td style="text-align:right">1210</td></tr>
-                    <tr><td>05</td><td>STUDENT 07</td><td style="text-align:right">1100</td></tr>
-                </table>
-            </div>
-        </div>
-
-        <div class="pixel-box boss-reward">
-            <span class="reward-title">BOSS REWARD UNLOCK</span>
-            <div style="font-size: 11px; line-height: 1.6;">
-                REACH <span style="color:var(--neon-cyan)">LEVEL 10</span> TO ACTIVATE:<br>
-                <span style="color:var(--neon-green); font-size: 18px; display: block; margin-top: 10px;">+5% EXAM SCORE BUFF</span>
-            </div>
-        </div>
-
     </div>
 
-    <footer class="system-footer">
-        REPO_ID: OSK03_FY-06867178 // STATUS: <span id="sync-text">SYNCING...</span><br>
-        2025 SURREY_NET // PIXEL_OS V1.0.4
-    </footer>
+    <div id="game-container">
+        <canvas id="quest-canvas" width="600" height="400"></canvas>
+        <div id="prompt" class="interaction-prompt"></div>
+        
+        <div id="quiz-overlay">
+            <div class="quiz-box">
+                <div id="quiz-topic" style="font-size: 8px; color: var(--pixel-blue); margin-bottom: 10px;">TOPIC</div>
+                <div class="question-text" id="q-display">3x + 7 = 19?</div>
+                <input type="text" id="ans-input" class="answer-input" placeholder="?">
+                <br>
+                <button class="btn" onclick="checkAnswer()">SUBMIT_DATA</button>
+            </div>
+        </div>
+    </div>
 
-</div>
+    <div style="font-size: 7px; color: #444; margin-top: 15px;">[ARROWS] TO MOVE // [SPACE] TO ENTER QUEST DOOR</div>
 
 <script>
-    // --- PAC-MAN GAME LOGIC ---
-    const canvas = document.getElementById('pacman-canvas');
+    const canvas = document.getElementById('quest-canvas');
     const ctx = canvas.getContext('2d');
-    const W = canvas.width, H = canvas.height;
+    const promptEl = document.getElementById('prompt');
 
-    let pac = { x: W/2, y: H/2, r: 12, dx: 0, dy: 0, mouth: 0 };
-    let pellets = [];
-    for(let i=0; i<10; i++) pellets.push({ x: Math.random()*(W-20)+10, y: Math.random()*(H-20)+10 });
+    // --- GAME STATE ---
+    let state = "LIBRARY"; // LIBRARY or QUIZ
+    let xp = 150;
+    let currentQuest = null;
+    let currentQuestion = null;
+    let stars = [];
 
-    function drawGame() {
-        ctx.fillStyle = "black";
-        ctx.fillRect(0,0,W,H);
-        
-        // Pellets (XP Dots)
-        ctx.fillStyle = "white";
-        pellets.forEach(p => ctx.fillRect(p.x, p.y, 4, 4));
+    const player = {
+        x: 285, y: 300, w: 24, h: 28, speed: 3,
+        dir: "down", frame: 0
+    };
 
-        // Pacman
-        ctx.fillStyle = "yellow";
-        ctx.beginPath();
-        let angle = (pac.dx > 0) ? 0 : (pac.dx < 0) ? Math.PI : (pac.dy > 0) ? 0.5*Math.PI : 1.5*Math.PI;
-        ctx.arc(pac.x, pac.y, pac.r, angle + 0.2, angle + 2*Math.PI - 0.2);
-        ctx.lineTo(pac.x, pac.y);
-        ctx.fill();
+    const quests = [
+        { id: 1, name: "ALGEBRA TEMPLE", topic: "algebra", x: 80, y: 60, w: 60, h: 80, color: "#00bfff" },
+        { id: 2, name: "CALCULUS CHAMBER", topic: "calculus", x: 460, y: 60, w: 60, h: 80, color: "#1e90ff" },
+        { id: 3, name: "MATRIX VAULT", topic: "matrices", x: 80, y: 220, w: 60, h: 80, color: "#66ccff" },
+        { id: 4, name: "ODE SANCTUM", topic: "ode", x: 460, y: 220, w: 60, h: 80, color: "#003366" }
+    ];
 
-        // Movement
-        pac.x += pac.dx; pac.y += pac.dy;
-        if(pac.x < 0) pac.x = W; if(pac.x > W) pac.x = 0;
-        if(pac.y < 0) pac.y = H; if(pac.y > H) pac.y = 0;
+    const walls = [
+        { x: 200, y: 50, w: 200, h: 40 }, // Top bookshelf
+        { x: 200, y: 240, w: 200, h: 40 } // Middle bookshelf
+    ];
 
-        // Eat Logic
-        pellets = pellets.filter(p => Math.hypot(pac.x - p.x, pac.y - p.y) > pac.r);
-        if(pellets.length === 0) {
-             for(let i=0; i<10; i++) pellets.push({ x: Math.random()*(W-20)+10, y: Math.random()*(H-20)+10 });
+    // --- INITIALIZE ---
+    for(let i=0; i<30; i++) stars.push({ x: Math.random()*600, y: Math.random()*400, s: Math.random()*2 });
+
+    const keys = {};
+    window.addEventListener('keydown', e => keys[e.code] = true);
+    window.addEventListener('keyup', e => keys[e.code] = false);
+
+    // --- MATH GENERATOR ---
+    function generateEquation(topic) {
+        let a = Math.floor(Math.random()*10)+2;
+        let b = Math.floor(Math.random()*15)+1;
+        if(topic === 'algebra') {
+            let res = a * 3 + b;
+            return { q: `Solve for x: ${a}x + ${b} = ${res}`, a: "3" };
+        } else if(topic === 'calculus') {
+            return { q: `d/dx of ${a}x^2 + ${b}x`, a: `${a*2}x+${b}`.replace('+-','-') };
+        } else if(topic === 'matrices') {
+            return { q: `Det of [[${a},1],[2,3]]`, a: (a*3 - 2).toString() };
+        } else {
+            return { q: `Solve dy/dx = ${a}y`, a: `e^${a}x` };
         }
-
-        requestAnimationFrame(drawGame);
     }
 
-    window.addEventListener('keydown', e => {
-        const s = 2;
-        if(e.key === 'ArrowUp') { pac.dx = 0; pac.dy = -s; }
-        if(e.key === 'ArrowDown') { pac.dx = 0; pac.dy = s; }
-        if(e.key === 'ArrowLeft') { pac.dx = -s; pac.dy = 0; }
-        if(e.key === 'ArrowRight') { pac.dx = s; pac.dy = 0; }
-    });
+    // --- GAME ENGINE ---
+    function update() {
+        if(state !== "LIBRARY") return;
 
-    // --- SYSTEM LOGIC ---
-    window.onload = () => {
-        drawGame();
+        let nextX = player.x;
+        let nextY = player.y;
 
-        // Animate Bars
-        setTimeout(() => {
-            const q = document.getElementById('q-bar');
-            const l = document.getElementById('l-bar');
-            q.style.width = q.getAttribute('data-val');
-            l.style.width = l.getAttribute('data-val');
-        }, 500);
+        if(keys['ArrowUp']) { nextY -= player.speed; player.dir = "up"; }
+        if(keys['ArrowDown']) { nextY += player.speed; player.dir = "down"; }
+        if(keys['ArrowLeft']) { nextX -= player.speed; player.dir = "left"; }
+        if(keys['ArrowRight']) { nextX += player.speed; player.dir = "right"; }
 
-        // GitHub Sync
-        fetch('https://api.github.com/repos/OSK03/FY-06867178/commits')
-            .then(res => res.json())
-            .then(data => {
-                const date = new Date(data[0].commit.committer.date).toLocaleDateString();
-                document.getElementById('sync-text').innerText = `STABLE // LAST_PUSH: ${date}`;
-            })
-            .catch(() => { document.getElementById('sync-text').innerText = "LOCAL_CACHE"; });
-    };
+        // Wall Collision
+        let hitWall = walls.some(w => (nextX < w.x + w.w && nextX + player.w > w.x && nextY < w.y + w.h && nextY + player.h > w.y));
+        if(!hitWall) {
+            player.x = Math.max(0, Math.min(600-player.w, nextX));
+            player.y = Math.max(0, Math.min(400-player.h, nextY));
+        }
+
+        // Quest Detection
+        let nearQuest = quests.find(q => Math.hypot(player.x - q.x, player.y - q.y) < 60);
+        if(nearQuest) {
+            promptEl.innerText = `PRESS [SPACE] TO ENTER ${nearQuest.name}`;
+            if(keys['Space']) startQuest(nearQuest);
+        } else {
+            promptEl.innerText = "";
+        }
+    }
+
+    function startQuest(q) {
+        state = "QUIZ";
+        currentQuest = q;
+        currentQuestion = generateEquation(q.topic);
+        document.getElementById('quiz-topic').innerText = q.name;
+        document.getElementById('q-display').innerText = currentQuestion.q;
+        document.getElementById('quiz-overlay').style.display = 'flex';
+        document.getElementById('ans-input').value = "";
+        document.getElementById('ans-input').focus();
+    }
+
+    function checkAnswer() {
+        let input = document.getElementById('ans-input').value.trim();
+        if(input === currentQuestion.a) {
+            xp += 50;
+            createXPFloat();
+            updateUI();
+        }
+        document.getElementById('quiz-overlay').style.display = 'none';
+        state = "LIBRARY";
+    }
+
+    function createXPFloat() {
+        const div = document.createElement('div');
+        div.className = 'xp-float';
+        div.innerText = '+50 XP';
+        div.style.left = player.x + 'px';
+        div.style.top = player.y + 'px';
+        document.getElementById('game-container').appendChild(div);
+        setTimeout(() => div.remove(), 1500);
+    }
+
+    function updateUI() {
+        let qBar = document.getElementById('q-bar');
+        let xpBar = document.getElementById('xp-bar');
+        let qText = document.getElementById('q-text');
+
+        // XP / Level logic
+        let lvl = Math.floor(xp / 100) + 1;
+        document.getElementById('lvl-text').innerText = lvl;
+        xpBar.style.width = (xp % 100) + "%";
+
+        // Quartile Logic
+        let q = "Q4";
+        let color = "#ef4444";
+        if(xp >= 700) { q = "Q1"; color = varProp('--pixel-blue'); }
+        else if(xp >= 400) { q = "Q2"; color = varProp('--electric-blue'); }
+        else if(xp >= 200) { q = "Q3"; color = varProp('--deep-blue'); }
+        
+        qText.innerText = `RANK: ${q}`;
+        qBar.style.width = Math.min(100, (xp/700)*100) + "%";
+    }
+    
+    function varProp(name) { return getComputedStyle(document.documentElement).getPropertyValue(name); }
+
+    // --- DRAWING ---
+    function draw() {
+        ctx.fillStyle = "#020617";
+        ctx.fillRect(0,0,600,400);
+
+        // Floor Grid
+        ctx.strokeStyle = "#001a33";
+        for(let i=0; i<600; i+=40) { ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,400); ctx.stroke(); }
+        for(let i=0; i<400; i+=40) { ctx.beginPath(); ctx.moveTo(0,i); ctx.lineTo(600,i); ctx.stroke(); }
+
+        // Stars
+        ctx.fillStyle = "white";
+        stars.forEach(s => {
+            ctx.fillRect(s.x, s.y, s.s, s.s);
+            s.y += 0.2; if(s.y > 400) s.y = 0;
+        });
+
+        // Bookshelves (LEGO Style)
+        ctx.fillStyle = "#4a2c10";
+        walls.forEach(w => {
+            ctx.fillRect(w.x, w.y, w.w, w.h);
+            ctx.strokeStyle = "#2b1808";
+            ctx.strokeRect(w.x, w.y, w.w, w.h);
+        });
+
+        // Quest Doors
+        quests.forEach(q => {
+            ctx.shadowBlur = 15; ctx.shadowColor = q.color;
+            ctx.fillStyle = q.color;
+            ctx.fillRect(q.x, q.y, q.w, q.h);
+            ctx.shadowBlur = 0;
+            ctx.fillStyle = "white";
+            ctx.font = "6px 'Press Start 2P'";
+            ctx.fillText(q.name.split(' ')[0], q.x, q.y - 10);
+        });
+
+        // LEGO Player
+        // Torso
+        ctx.fillStyle = varProp('--deep-blue');
+        ctx.fillRect(player.x + 4, player.y + 10, 16, 12);
+        // Head
+        ctx.fillStyle = "#facc15";
+        ctx.fillRect(player.x + 6, player.y, 12, 10);
+        // Lightsaber
+        ctx.strokeStyle = varProp('--pixel-blue');
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(player.x + 20, player.y + 10);
+        ctx.lineTo(player.x + 20, player.y - 15);
+        ctx.stroke();
+
+        requestAnimationFrame(() => {
+            update();
+            draw();
+        });
+    }
+
+    updateUI();
+    draw();
 </script>
 
 </body>
