@@ -3,25 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>SurreyLearn | Gamified Mathematics</title>
+    <title>SurreyLearn | Progressive Gamification</title>
     <style>
         :root {
-            /* Professional University Palette */
             --surrey-navy: #003366;
             --surrey-blue: #2b6cb0;
             --surrey-light: #ebf8ff;
             --surrey-gold: #d4af37;
-            
-            /* Clean UI Colors */
             --bg-color: #f4f7f9;
             --card-bg: #ffffff;
             --text-main: #2d3748;
             --text-muted: #718096;
             --border-color: #e2e8f0;
-            
-            /* Gamification Accents */
-            --success-green: #38a169;
-            --radius: 12px;
+            --radius: 16px;
         }
 
         body {
@@ -29,186 +23,226 @@
             background-color: var(--bg-color);
             color: var(--text-main);
             margin: 0;
-            padding: 20px;
+            padding: 30px 20px;
             display: flex;
             justify-content: center;
         }
 
         .dashboard-wrapper {
-            max-width: 900px;
+            max-width: 950px;
             width: 100%;
         }
 
-        /* --- Header / Mascot Banner --- */
+        /* --- Progressive Banner --- */
         .mascot-banner {
-            background: linear-gradient(135deg, var(--surrey-navy), var(--surrey-blue));
+            background: linear-gradient(135deg, var(--surrey-navy) 0%, #1a4971 100%);
             border-radius: var(--radius);
-            padding: 20px 30px;
+            padding: 25px 35px;
             color: white;
             display: flex;
             align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 25px rgba(0, 51, 102, 0.15);
+        }
+
+        .banner-left {
+            display: flex;
+            align-items: center;
             gap: 20px;
-            margin-bottom: 25px;
-            box-shadow: 0 4px 15px rgba(0, 51, 102, 0.15);
         }
 
         .stag-icon {
-            background: white;
-            width: 70px;
-            height: 70px;
+            background: rgba(255,255,255,0.1);
+            width: 75px;
+            height: 75px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 35px;
-            box-shadow: 0 0 0 4px rgba(255,255,255,0.2);
-            flex-shrink: 0;
+            border: 2px solid rgba(255,255,255,0.3);
+            backdrop-filter: blur(5px);
         }
 
-        .banner-text h1 {
-            margin: 0 0 5px 0;
-            font-size: 20px;
-            font-weight: 600;
-        }
+        .banner-text h1 { margin: 0 0 5px 0; font-size: 22px; font-weight: 600; }
+        .banner-text p { margin: 0; font-size: 15px; color: #a0aec0; }
 
-        .banner-text p {
-            margin: 0;
-            font-size: 14px;
-            opacity: 0.9;
-            line-height: 1.4;
+        .streak-box {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.2);
         }
 
         /* --- Grid Layout --- */
         .grid-container {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 25px;
         }
 
-        @media (max-width: 768px) {
-            .grid-container {
-                grid-template-columns: 1fr;
-            }
-        }
+        @media (max-width: 768px) { .grid-container { grid-template-columns: 1fr; } }
 
-        /* --- UI Cards --- */
+        /* --- Progressive Cards --- */
         .ui-card {
             background-color: var(--card-bg);
             border-radius: var(--radius);
-            padding: 25px;
+            padding: 30px;
             border: 1px solid var(--border-color);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-            position: relative;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .ui-card:hover {
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
         }
 
         .card-header {
-            font-size: 12px;
+            font-size: 13px;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
             color: var(--text-muted);
             font-weight: 700;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             display: flex;
             justify-content: space-between;
         }
 
-        /* --- Progress Elements --- */
+        /* --- Animated Progress Bars --- */
         .metric-value {
-            font-size: 32px;
-            font-weight: bold;
+            font-size: 36px;
+            font-weight: 800;
             color: var(--surrey-navy);
             margin-bottom: 5px;
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
         }
 
         .progress-track {
             background-color: #edf2f7;
-            height: 12px;
+            height: 14px;
             border-radius: 20px;
             width: 100%;
-            margin: 15px 0 10px 0;
+            margin: 20px 0 10px 0;
             overflow: hidden;
+            position: relative;
         }
 
         .progress-fill {
             background-color: var(--surrey-blue);
             height: 100%;
             border-radius: 20px;
-            transition: width 1s ease-in-out;
+            width: 0%; /* Starts at 0 for animation */
+            transition: width 1.5s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
         .progress-fill.gold {
-            background: linear-gradient(90deg, #d4af37, #f3e5ab);
+            background: linear-gradient(90deg, #b7791f, #d4af37, #f6e05e);
+            background-size: 200% 100%;
+            animation: gradientShift 3s ease infinite;
         }
 
-        /* --- Rewards Highlight --- */
+        /* --- Visual Milestone Track --- */
+        .milestone-track {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+            position: relative;
+        }
+
+        .milestone-track::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 5%;
+            right: 5%;
+            height: 2px;
+            background: var(--border-color);
+            z-index: 1;
+        }
+
+        .node {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+            color: var(--text-muted);
+            position: relative;
+            z-index: 2;
+        }
+
+        .node.completed { background: var(--surrey-navy); color: white; border-color: var(--surrey-navy); }
+        .node.current { border: 3px solid var(--surrey-blue); color: var(--surrey-blue); font-weight: 900; box-shadow: 0 0 10px rgba(43, 108, 176, 0.3); }
+        .node.goal { background: #fffaf0; border-color: var(--surrey-gold); color: #b7791f; }
+
+        /* --- Glowing Reward Box --- */
         .reward-highlight {
             background-color: #fffaf0;
-            border-left: 4px solid var(--surrey-gold);
-            padding: 15px;
-            border-radius: 0 var(--radius) var(--radius) 0;
-            margin-top: 20px;
+            border: 1px solid #f6e05e;
+            padding: 20px;
+            border-radius: var(--radius);
+            margin-top: 25px;
+            position: relative;
+            animation: pulseGlow 2.5s infinite;
         }
 
-        .reward-highlight strong {
-            color: #b7791f;
-            display: block;
-            margin-bottom: 5px;
-        }
+        .reward-highlight h4 { margin: 0 0 8px 0; color: #b7791f; font-size: 16px; display: flex; align-items: center; gap: 8px;}
+        .reward-highlight p { margin: 0; font-size: 14px; color: #744210; line-height: 1.5; }
 
-        /* --- Leaderboard (Fully Anonymized) --- */
-        .leaderboard-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
+        /* --- Interactive Leaderboard --- */
+        .leaderboard-list { list-style: none; padding: 0; margin: 0; }
+        
         .leaderboard-item {
             display: flex;
             align-items: center;
-            padding: 12px 0;
+            padding: 15px 10px;
             border-bottom: 1px solid var(--border-color);
             font-size: 15px;
+            transition: all 0.2s ease;
+            border-radius: 8px;
         }
 
-        .leaderboard-item:last-child {
-            border-bottom: none;
+        .leaderboard-item:hover {
+            background-color: #f7fafc;
+            transform: translateX(5px);
+            cursor: default;
         }
 
-        .rank {
-            width: 30px;
-            font-weight: bold;
-            color: var(--text-muted);
-        }
-
-        .student-id {
-            flex-grow: 1;
-            font-weight: 500;
-        }
-
-        .points {
-            font-weight: bold;
-            color: var(--surrey-blue);
-        }
+        .leaderboard-item:last-child { border-bottom: none; }
+        
+        .rank { width: 35px; font-weight: 800; color: var(--text-muted); }
+        .student-id { flex-grow: 1; font-weight: 500; }
+        .points { font-weight: bold; color: var(--surrey-blue); background: var(--surrey-light); padding: 4px 10px; border-radius: 12px; font-size: 13px;}
 
         .current-user {
             background-color: var(--surrey-light);
-            padding: 12px 15px;
-            margin: 0 -15px;
-            border-radius: 8px;
-            border-bottom: none;
-            color: var(--surrey-navy);
+            border: 1px solid #bee3f8;
+            border-bottom: 1px solid #bee3f8;
         }
+        .current-user:hover { background-color: #e2f1f8; }
+        .current-user .rank { color: var(--surrey-navy); }
 
-        .current-user .rank, .current-user .points {
-            color: var(--surrey-navy);
+        /* --- Animations --- */
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
-
-        /* --- System Info --- */
-        .system-footer {
-            text-align: center;
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-top: 30px;
+        
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(212, 175, 55, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); }
         }
     </style>
 </head>
@@ -217,124 +251,114 @@
 <div class="dashboard-wrapper">
 
     <div class="mascot-banner">
-        <div class="stag-icon">🦌</div>
-        <div class="banner-text">
-            <h1>Welcome back, Student </h1>
-            <p>Consistent engagement is the key to mastering mathematics. You are currently performing in the top 50% of your cohort. Keep up the excellent work!</p>
+        <div class="banner-left">
+            <div class="stag-icon">🦌</div>
+            <div class="banner-text">
+                <h1>Welcome back, Student 42</h1>
+                <p>You are currently performing in the top 50% of your cohort.</p>
+            </div>
+        </div>
+        <div class="streak-box">
+            <div style="font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #cbd5e0;">Weekly Streak</div>
+            <div style="font-size: 24px; font-weight: bold; color: white;">🔥 3 Weeks</div>
         </div>
     </div>
 
     <div class="grid-container">
-        
         <div class="column">
-            <div class="ui-card" style="margin-bottom: 20px;">
+            
+            <div class="ui-card" style="margin-bottom: 25px;">
                 <div class="card-header">
-                    <span>Performance Ranking</span>
+                    <span>Quartile Progression</span>
                     <span>1,450 Points</span>
                 </div>
-                <div class="metric-value">Quartile 2</div>
-                <p style="font-size: 13px; color: var(--text-muted); margin: 0;">Relative to module cohort</p>
+                <div class="metric-value">Quartile 2 <span style="font-size: 14px; color: var(--text-muted); font-weight: 500;">(Top 50%)</span></div>
                 
                 <div class="progress-track">
-                    <div class="progress-fill" style="width: 75%;"></div>
+                    <div class="progress-fill" id="quartile-bar" data-target="75%"></div>
                 </div>
-                <div style="font-size: 12px; text-align: right; color: var(--text-muted);">75% to Quartile 1</div>
+                <div style="font-size: 13px; text-align: right; color: var(--text-muted); font-weight: 500;">75% toward Quartile 1</div>
             </div>
 
             <div class="ui-card">
                 <div class="card-header">
-                    <span>Academic Rewards</span>
-                    <span style="color: var(--surrey-gold);">Level 7</span>
-                </div>
-                
-                <div style="font-size: 14px; line-height: 1.5;">
-                    Earn experience points (XP) by completing structured tasks and weekly challenges without the pressure of a timer.
+                    <span>Academic Boost Tracker</span>
+                    <span style="color: var(--surrey-gold);">Current: Level 7</span>
                 </div>
 
-                <div class="progress-track">
-                    <div class="progress-fill gold" style="width: 70%;"></div>
+                <div class="progress-track" style="height: 8px;">
+                    <div class="progress-fill gold" id="level-bar" data-target="30%"></div>
                 </div>
-                <div style="font-size: 12px; text-align: right; color: var(--text-muted);">3 Levels to go</div>
+
+                <div class="milestone-track">
+                    <div class="node completed">✓</div>
+                    <div class="node completed">6</div>
+                    <div class="node current">7</div>
+                    <div class="node">8</div>
+                    <div class="node">9</div>
+                    <div class="node goal">10</div>
+                </div>
 
                 <div class="reward-highlight">
-                    <strong>🎯 Ultimate Goal: Level 10</strong>
-                    <span style="font-size: 13px; color: #744210;">
-                        When Level 10 is reached, you will automatically unlock a <b>5% boost for your final exam</b>.
-                    </span>
+                    <h4>⭐ Level 10 Milestone</h4>
+                    <p>Reaching Level 10 proves long-term knowledge retention. Upon unlocking, you will automatically receive a <b>5% grade boost on your final exam</b>.</p>
                 </div>
             </div>
+
         </div>
 
         <div class="column">
             <div class="ui-card" style="height: 100%; box-sizing: border-box;">
                 <div class="card-header">
-                    <span>Quartile 2 Leaderboard</span>
-                    <span style="color: var(--success-green);">Live</span>
+                    <span>Live Cohort Leaderboard (Q2)</span>
+                    <span style="color: #38a169;">● Active</span>
                 </div>
-                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">
-                    Students are anonymized to reduce social pressure while maintaining healthy competition within your current skill bracket.
-                </p>
 
                 <ul class="leaderboard-list">
                     <li class="leaderboard-item">
                         <span class="rank">1</span>
                         <span class="student-id">Student 89</span>
-                        <span class="points">1,620 pts</span>
+                        <span class="points">1,620</span>
                     </li>
                     <li class="leaderboard-item current-user">
                         <span class="rank">2</span>
                         <span class="student-id">Student 42 (You)</span>
-                        <span class="points">1,450 pts</span>
+                        <span class="points">1,450</span>
                     </li>
                     <li class="leaderboard-item">
                         <span class="rank">3</span>
                         <span class="student-id">Student 12</span>
-                        <span class="points">1,380 pts</span>
+                        <span class="points">1,380</span>
                     </li>
                     <li class="leaderboard-item">
                         <span class="rank">4</span>
                         <span class="student-id">Student 55</span>
-                        <span class="points">1,210 pts</span>
+                        <span class="points">1,210</span>
                     </li>
                     <li class="leaderboard-item">
                         <span class="rank">5</span>
                         <span class="student-id">Student 07</span>
-                        <span class="points">1,100 pts</span>
+                        <span class="points">1,100</span>
                     </li>
                 </ul>
             </div>
         </div>
-
-    </div>
-
-    <div class="system-footer" id="github-sync">
-        SurreyLearn Gamified Extension | Syncing repository data...
     </div>
 
 </div>
 
 <script>
-    // GitHub API Verification Logic
-    async function fetchSystemUpdate() {
-        const username = 'OSK03';
-        const repo = 'FY-06867178';
-        const statusEl = document.getElementById('github-sync');
-
-        try {
-            const response = await fetch(`https://api.github.com/repos/${username}/${repo}/commits`);
-            if (!response.ok) throw new Error();
+    // Progressive Animation trigger on load
+    window.addEventListener('DOMContentLoaded', () => {
+        // Slight delay to ensure smooth rendering before animation starts
+        setTimeout(() => {
+            const quartileBar = document.getElementById('quartile-bar');
+            const levelBar = document.getElementById('level-bar');
             
-            const commits = await response.json();
-            if (commits && commits.length > 0) {
-                const lastDate = new Date(commits[0].commit.committer.date);
-                statusEl.innerText = `SurreyLearn Gamified Extension | Last System Sync: ${lastDate.toLocaleDateString()}`;
-            }
-        } catch (error) {
-            statusEl.innerText = "SurreyLearn Gamified Extension | Local Mode Active (Sync Unavailable)";
-        }
-    }
-
-    window.onload = fetchSystemUpdate;
+            quartileBar.style.width = quartileBar.getAttribute('data-target');
+            levelBar.style.width = levelBar.getAttribute('data-target');
+        }, 300);
+    });
 </script>
 
 </body>
