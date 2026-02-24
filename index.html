@@ -3,325 +3,321 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>SurreyHUD // Academic Arena</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <title>SurreyLearn | Pixel Quest</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
         :root {
-            --neon-cyan: #00f3ff;
-            --neon-pink: #ff00ff;
-            --neon-purple: #bc13fe;
-            --dark-void: #050505;
-            --panel-bg: rgba(20, 20, 25, 0.85);
-            --border-glow: rgba(0, 243, 255, 0.3);
+            --pixel-green: #39ff14;
+            --pixel-pink: #ff00ff;
+            --pixel-cyan: #00ffff;
+            --pixel-bg: #0b0b0b;
+            --border-width: 4px;
+        }
+
+        * {
+            box-sizing: border-box; /* Prevents bar overflow issues */
+            image-rendering: pixelated;
         }
 
         body {
-            background-color: var(--dark-void);
+            background-color: var(--pixel-bg);
             color: white;
-            font-family: 'Rajdhani', sans-serif;
+            font-family: 'Press Start 2P', cursive;
             margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            line-height: 1.6;
             overflow-x: hidden;
-            background-image: 
-                linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
-                linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-            background-size: 100% 4px, 3px 100%; /* CRT Scanline Effect */
         }
 
-        /* Ambient Glow Background */
-        body::after {
-            content: "";
+        /* Scanline Overlay Effect */
+        body::before {
+            content: " ";
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at 50% 50%, rgba(188, 19, 254, 0.1) 0%, transparent 80%);
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 100;
+            background-size: 100% 3px, 3px 100%;
             pointer-events: none;
-            z-index: -1;
         }
 
-        .hud-wrapper {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 40px 20px;
-            animation: bootUp 1.5s ease-out;
+        .game-wrapper {
+            width: 100%;
+            max-width: 850px;
+            border: var(--border-width) solid white;
+            padding: 20px;
+            box-shadow: 10px 10px 0px #333;
+            background: rgba(0,0,0,0.8);
         }
 
-        /* --- TOP HUD BAR --- */
-        .top-hud {
+        /* --- TOP HEADER (PLAYER HUD) --- */
+        .hud-header {
+            border-bottom: var(--border-width) solid var(--pixel-cyan);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 2px solid var(--neon-cyan);
-            padding-bottom: 10px;
-            margin-bottom: 40px;
-            filter: drop-shadow(0 0 10px var(--border-glow));
+            flex-wrap: wrap;
+            gap: 15px;
         }
 
-        .player-info { display: flex; align-items: center; gap: 20px; }
-        
-        .spirit-stag {
-            width: 70px; height: 70px;
-            background: black;
-            border: 2px solid var(--neon-cyan);
-            clip-path: polygon(20% 0%, 80% 0%, 100% 20%, 100% 80%, 80% 100%, 20% 100%, 0% 80%, 0% 20%);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 35px;
-            text-shadow: 0 0 15px var(--neon-cyan);
+        .stag-avatar {
+            font-size: 40px;
+            border: var(--border-width) solid var(--pixel-green);
+            padding: 10px;
+            background: #111;
         }
 
-        .glitch-text {
-            font-family: 'Orbitron', sans-serif;
-            font-weight: 900;
-            letter-spacing: 2px;
-            text-transform: uppercase;
+        .player-name {
+            color: var(--pixel-green);
+            font-size: 14px;
         }
 
-        /* --- BENTO QUEST GRID --- */
-        .quest-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 25px;
-        }
-
-        .panel {
-            background: var(--panel-bg);
-            border: 1px solid var(--border-glow);
-            border-radius: 4px; /* Hard gaming edges */
-            padding: 25px;
-            position: relative;
-            backdrop-filter: blur(10px);
-        }
-
-        /* Corner Accents */
-        .panel::before {
-            content: ""; position: absolute; top: -2px; left: -2px; width: 20px; height: 20px;
-            border-top: 3px solid var(--neon-cyan); border-left: 3px solid var(--neon-cyan);
-        }
-
-        .header-tag {
-            font-family: 'Orbitron', sans-serif;
+        .streak-counter {
+            color: var(--pixel-pink);
             font-size: 12px;
-            color: var(--neon-cyan);
-            margin-bottom: 15px;
-            display: block;
+            text-align: right;
         }
 
-        /* --- HEALTH / PROGRESS BARS --- */
-        .stat-label { display: flex; justify-content: space-between; margin-bottom: 8px; font-weight: bold; }
-        
-        .bar-container {
-            background: rgba(255,255,255,0.05);
-            height: 24px;
-            border: 1px solid rgba(0, 243, 255, 0.2);
-            padding: 2px;
-            margin-bottom: 20px;
+        /* --- DASHBOARD GRIDS --- */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
         }
 
-        .bar-fill {
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(90deg, var(--neon-purple), var(--neon-cyan));
-            transition: width 2s cubic-bezier(0.1, 1, 0.1, 1);
+        @media (max-width: 700px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
+        }
+
+        .pixel-box {
+            border: var(--border-width) solid white;
+            padding: 15px;
+            background: #000;
             position: relative;
+            margin-bottom: 15px;
         }
 
-        .bar-fill::after {
-            content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-            animation: shine 3s infinite;
+        .pixel-box::after {
+            content: '';
+            position: absolute;
+            bottom: -10px; right: -10px;
+            width: 100%; height: 100%;
+            border: var(--border-width) solid #333;
+            z-index: -1;
         }
 
-        /* --- ARENA RANKINGS --- */
-        .rankings { list-style: none; padding: 0; margin: 0; }
-        .rank-row {
-            display: flex; align-items: center; padding: 12px;
-            border-left: 3px solid transparent;
-            margin-bottom: 5px;
-            background: rgba(255,255,255,0.02);
-            transition: 0.3s;
-        }
-
-        .rank-row:hover {
-            background: rgba(0, 243, 255, 0.1);
-            border-left: 3px solid var(--neon-cyan);
-            transform: translateX(10px);
-        }
-
-        .user-highlight {
-            background: rgba(188, 19, 254, 0.2) !important;
-            border-left: 3px solid var(--neon-pink) !important;
-            box-shadow: inset 0 0 15px rgba(255, 0, 255, 0.2);
-        }
-
-        /* --- PASSIVE SKILL (EXAM BOOST) --- */
-        .skill-card {
-            grid-column: span 2;
-            display: flex;
-            align-items: center;
-            gap: 30px;
-            border: 1px solid var(--neon-pink);
-            background: linear-gradient(90deg, rgba(255, 0, 255, 0.1), transparent);
-        }
-
-        .skill-icon {
-            font-size: 50px; color: var(--neon-pink);
-            filter: drop-shadow(0 0 10px var(--neon-pink));
-        }
-
-        /* --- BUTTONS --- */
-        .btn-launch {
-            background: transparent;
-            border: 2px solid var(--neon-cyan);
-            color: var(--neon-cyan);
-            font-family: 'Orbitron', sans-serif;
-            padding: 15px 30px;
-            cursor: pointer;
+        .label {
+            display: block;
+            font-size: 10px;
+            color: var(--pixel-cyan);
+            margin-bottom: 15px;
             text-transform: uppercase;
-            font-weight: bold;
-            transition: 0.3s;
+        }
+
+        /* --- PROGRESS BARS (FIXED) --- */
+        .progress-container {
+            width: 100%; /* Keeps it inside parent pixel-box */
+            height: 30px;
+            background-color: #222;
+            border: 3px solid white;
+            position: relative;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%; /* Dynamic */
+            background-color: var(--pixel-green);
+            box-shadow: inset -5px 0 0 #008000;
+            transition: width 1.5s steps(10); /* "Chunky" 2000s animation */
+        }
+
+        .progress-fill.gold {
+            background-color: #ffd700;
+            box-shadow: inset -5px 0 0 #b8860b;
+        }
+
+        /* --- LEADERBOARD --- */
+        .leaderboard-table {
             width: 100%;
-            margin-top: 20px;
+            font-size: 10px;
+            border-collapse: collapse;
         }
 
-        .btn-launch:hover {
-            background: var(--neon-cyan);
-            color: black;
-            box-shadow: 0 0 30px var(--neon-cyan);
+        .leaderboard-table td {
+            padding: 12px 5px;
+            border-bottom: 2px solid #222;
         }
 
-        /* --- ANIMATIONS --- */
-        @keyframes bootUp {
-            0% { opacity: 0; transform: scale(0.95); filter: brightness(5); }
-            100% { opacity: 1; transform: scale(1); filter: brightness(1); }
+        .row-you {
+            background-color: #111;
+            color: var(--pixel-cyan);
+            border: 2px solid var(--pixel-cyan);
         }
 
-        @keyframes shine {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
+        .rank-num { color: var(--pixel-pink); width: 30px; }
+
+        /* --- REWARD PANEL --- */
+        .reward-panel {
+            grid-column: span 2;
+            border-color: var(--pixel-pink);
+            text-align: center;
         }
 
-        .pulse { animation: neonPulse 2s infinite; }
-        @keyframes neonPulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.6; }
+        @media (max-width: 700px) { .reward-panel { grid-column: span 1; } }
+
+        .reward-text {
+            color: white;
+            font-size: 12px;
+            margin: 15px 0;
+        }
+
+        .reward-highlight {
+            color: var(--pixel-pink);
+            font-size: 16px;
+            text-shadow: 2px 2px 0px #500;
+            display: block;
+            margin-top: 10px;
+        }
+
+        /* --- SYSTEM INFO --- */
+        .footer-sync {
+            margin-top: 40px;
+            font-size: 8px;
+            text-align: center;
+            color: #555;
+            letter-spacing: 1px;
+        }
+
+        /* --- BLINK ANIMATION --- */
+        .blink {
+            animation: blinker 1s linear infinite;
+        }
+
+        @keyframes blinker {
+            50% { opacity: 0; }
         }
     </style>
 </head>
 <body>
 
-<div class="hud-wrapper">
+<div class="game-wrapper">
 
-    <header class="top-hud">
-        <div class="player-info">
-            <div class="spirit-stag">🦌</div>
+    <header class="hud-header">
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <div class="stag-avatar">🦌</div>
             <div>
-                <div class="glitch-text" style="font-size: 24px; color: var(--neon-cyan);">Student_42</div>
-                <div style="font-family: monospace; font-size: 12px; color: var(--neon-purple);">RANK: QUARTILE_02 // SYSTEM: ONLINE</div>
+                <div class="player-name">PLAYER: STUDENT_42</div>
+                <div style="font-size: 8px; color: #888; margin-top: 5px;">CLASS: MATHEMATICS_PRO</div>
             </div>
         </div>
-        <div style="text-align: right;">
-            <div class="header-tag" style="margin: 0;">Weekly Quest Streak</div>
-            <div class="glitch-text" style="font-size: 28px; color: var(--neon-pink);">🔥 03 WKS</div>
+        <div class="streak-counter">
+            <span class="blink" style="color:var(--pixel-pink)">!</span> STREAK: 03 WEEKS <span class="blink" style="color:var(--pixel-pink)">!</span>
         </div>
     </header>
 
-    <div class="quest-grid">
+    <div class="dashboard-grid">
         
-        <div class="panel">
-            <span class="header-tag">Engagement XP Progression</span>
+        <div class="pixel-box">
+            <span class="label">Ascension Bar</span>
+            <div style="font-size: 14px; margin-bottom: 10px;">QUARTILE 2</div>
             
-            <div class="stat-label">
-                <span>QUARTILE ASCENSION</span>
-                <span style="color: var(--neon-cyan);">75%</span>
+            <div class="progress-container">
+                <div class="progress-fill" id="quartile-bar" data-val="75%"></div>
             </div>
-            <div class="bar-container">
-                <div class="bar-fill" id="quartile-bar" data-val="75%"></div>
-            </div>
-
-            <div class="stat-label" style="margin-top: 30px;">
-                <span>PLAYER LEVEL [LEVEL 07]</span>
-                <span style="color: var(--neon-pink);">XP TO LVL 08: 450</span>
-            </div>
-            <div class="bar-container" style="height: 12px;">
-                <div class="bar-fill" style="width: 45%; background: var(--neon-pink);"></div>
-            </div>
-
-            <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.6; border-left: 2px solid var(--neon-cyan); padding-left: 15px;">
-                > ENGAGEMENT LOG: 14 tasks completed this cycle. <br>
-                > Current trajectory leads to <span style="color: var(--neon-cyan);">QUARTILE 01</span> in approx. 6 days.
-            </p>
-
-            <button class="btn-launch">Resume Quest Log_</button>
-        </div>
-
-        <div class="panel">
-            <span class="header-tag">Arena Standings // Q2</span>
             
-            <div class="rankings">
-                <div class="rank-row">
-                    <span style="width: 30px; font-family: monospace;">01</span>
-                    <span style="flex: 1;">Student_89</span>
-                    <span class="points-tag">1,620 XP</span>
-                </div>
-                <div class="rank-row user-highlight">
-                    <span style="width: 30px; font-family: monospace;">02</span>
-                    <span style="flex: 1;">Student_42 [YOU]</span>
-                    <span class="points-tag">1,450 XP</span>
-                </div>
-                <div class="rank-row">
-                    <span style="width: 30px; font-family: monospace;">03</span>
-                    <span style="flex: 1;">Student_12</span>
-                    <span class="points-tag">1,380 XP</span>
-                </div>
-                <div class="rank-row">
-                    <span style="width: 30px; font-family: monospace;">04</span>
-                    <span style="flex: 1;">Student_55</span>
-                    <span class="points-tag">1,210 XP</span>
-                </div>
-                <div class="rank-row">
-                    <span style="width: 30px; font-family: monospace;">05</span>
-                    <span style="flex: 1;">Student_07</span>
-                    <span class="points-tag">1,100 XP</span>
-                </div>
+            <div style="font-size: 8px; color: var(--pixel-green); text-align: right; margin-top: 5px;">
+                75% TO Q1 ASCENSION
             </div>
         </div>
 
-        <div class="panel skill-card">
-            <div class="skill-icon">🏆</div>
-            <div>
-                <span class="header-tag" style="color: var(--neon-pink);">Legendary Passive Skill: Exam Fortitude</span>
-                <h2 style="margin: 5px 0; font-family: 'Orbitron'; letter-spacing: 1px;">5% EXAM SCORE BOOST</h2>
-                <p style="margin: 0; color: var(--text-secondary); opacity: 0.8;">
-                    STATUS: <span class="pulse" style="color: var(--neon-pink); font-weight: bold;">LOCKING AT LEVEL 10</span>. 
-                    Unlock this buff to apply a permanent +5% modifier to your final module assessment.
-                </p>
+        <div class="pixel-box">
+            <span class="label">Arena Standings</span>
+            <table class="leaderboard-table">
+                <tr>
+                    <td class="rank-num">01</td>
+                    <td>STUDENT 89</td>
+                    <td style="text-align:right">1620 XP</td>
+                </tr>
+                <tr class="row-you">
+                    <td class="rank-num">02</td>
+                    <td>YOU (STU-42)</td>
+                    <td style="text-align:right">1450 XP</td>
+                </tr>
+                <tr>
+                    <td class="rank-num">03</td>
+                    <td>STUDENT 12</td>
+                    <td style="text-align:right">1380 XP</td>
+                </tr>
+                <tr>
+                    <td class="rank-num">04</td>
+                    <td>STUDENT 55</td>
+                    <td style="text-align:right">1210 XP</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="pixel-box">
+            <span class="label">Level Status</span>
+            <div style="font-size: 14px; color: var(--pixel-pink);">LVL: 07</div>
+            <div class="progress-container">
+                <div class="progress-fill gold" id="level-bar" data-val="40%"></div>
             </div>
+            <div style="font-size: 8px; display: flex; justify-content: space-between;">
+                <span>LVL 7</span>
+                <span>LVL 8</span>
+            </div>
+        </div>
+
+        <div class="pixel-box reward-panel">
+            <span class="label">Final Boss Reward</span>
+            <div class="reward-text">
+                REACH <span style="color: var(--pixel-pink);">LEVEL 10</span> TO UNLOCK:
+                <span class="reward-highlight">5% EXAM GRADE BOOST</span>
+            </div>
+            <div style="font-size: 8px; color: #555;">STATUS: QUEST IN PROGRESS...</div>
         </div>
 
     </div>
 
-    <footer style="margin-top: 40px; font-family: monospace; font-size: 11px; opacity: 0.5; display: flex; justify-content: space-between;">
-        <span>>> CONNECTION_STABLE: SURREY_NET_V2.0</span>
-        <span id="sync-info">GITHUB_SYNC: FETCHING_DATA...</span>
+    <footer class="footer-sync">
+        GITHUB_LINK_ID: OSK03_FY-06867178 <br>
+        SYSTEM_STATUS: <span id="sync-status">FETCHING_API_DATA...</span>
     </footer>
 
 </div>
 
 <script>
     window.onload = () => {
-        // Animate Bars
+        // Pixel-style staggered loading
         setTimeout(() => {
-            const bar = document.getElementById('quartile-bar');
-            bar.style.width = bar.getAttribute('data-val');
-        }, 500);
+            const quartileBar = document.getElementById('quartile-bar');
+            const levelBar = document.getElementById('level-bar');
+            
+            quartileBar.style.width = quartileBar.getAttribute('data-val');
+            levelBar.style.width = levelBar.getAttribute('data-val');
+        }, 600);
 
-        // Fetch Real GitHub Sync
-        const syncEl = document.getElementById('sync-info');
-        fetch('https://api.github.com/repos/OSK03/FY-06867178/commits')
-            .then(res => res.json())
-            .then(data => {
-                const date = new Date(data[0].commit.committer.date).toLocaleDateString();
-                syncEl.innerText = `LINK_STABLE // LAST_ENCRYPTION: ${date}`;
+        // Github Sync Verification
+        const statusEl = document.getElementById('sync-status');
+        const url = 'https://api.github.com/repos/OSK03/FY-06867178/commits';
+
+        fetch(url)
+            .then(response => response.json())
+            .then(commits => {
+                if (commits && commits.length > 0) {
+                    const lastDate = new Date(commits[0].commit.committer.date);
+                    statusEl.innerText = `STABLE // LAST_PUSH: ${lastDate.toLocaleDateString()}`;
+                }
             })
-            .catch(() => { syncEl.innerText = "OFFLINE_MODE // LOCAL_CACHE_ONLY"; });
+            .catch(() => {
+                statusEl.innerText = "LOCAL_CACHE_LOADED";
+            });
     };
 </script>
 
