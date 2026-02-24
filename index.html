@@ -1,325 +1,214 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>SurreyLearn | Pixel Quest</title>
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --pixel-green: #39ff14;
-            --pixel-pink: #ff00ff;
-            --pixel-cyan: #00ffff;
-            --pixel-bg: #0b0b0b;
-            --border-width: 4px;
-        }
-
-        * {
-            box-sizing: border-box; /* Prevents bar overflow issues */
-            image-rendering: pixelated;
-        }
-
-        body {
-            background-color: var(--pixel-bg);
-            color: white;
-            font-family: 'Press Start 2P', cursive;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
-
-        /* Scanline Overlay Effect */
-        body::before {
-            content: " ";
-            position: fixed;
-            top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
-                        linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-            z-index: 100;
-            background-size: 100% 3px, 3px 100%;
-            pointer-events: none;
-        }
-
-        .game-wrapper {
-            width: 100%;
-            max-width: 850px;
-            border: var(--border-width) solid white;
-            padding: 20px;
-            box-shadow: 10px 10px 0px #333;
-            background: rgba(0,0,0,0.8);
-        }
-
-        /* --- TOP HEADER (PLAYER HUD) --- */
-        .hud-header {
-            border-bottom: var(--border-width) solid var(--pixel-cyan);
-            padding-bottom: 20px;
-            margin-bottom: 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .stag-avatar {
-            font-size: 40px;
-            border: var(--border-width) solid var(--pixel-green);
-            padding: 10px;
-            background: #111;
-        }
-
-        .player-name {
-            color: var(--pixel-green);
-            font-size: 14px;
-        }
-
-        .streak-counter {
-            color: var(--pixel-pink);
-            font-size: 12px;
-            text-align: right;
-        }
-
-        /* --- DASHBOARD GRIDS --- */
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        @media (max-width: 700px) {
-            .dashboard-grid { grid-template-columns: 1fr; }
-        }
-
-        .pixel-box {
-            border: var(--border-width) solid white;
-            padding: 15px;
-            background: #000;
-            position: relative;
-            margin-bottom: 15px;
-        }
-
-        .pixel-box::after {
-            content: '';
-            position: absolute;
-            bottom: -10px; right: -10px;
-            width: 100%; height: 100%;
-            border: var(--border-width) solid #333;
-            z-index: -1;
-        }
-
-        .label {
-            display: block;
-            font-size: 10px;
-            color: var(--pixel-cyan);
-            margin-bottom: 15px;
-            text-transform: uppercase;
-        }
-
-        /* --- PROGRESS BARS (FIXED) --- */
-        .progress-container {
-            width: 100%; /* Keeps it inside parent pixel-box */
-            height: 30px;
-            background-color: #222;
-            border: 3px solid white;
-            position: relative;
-            overflow: hidden;
-            margin: 10px 0;
-        }
-
-        .progress-fill {
-            height: 100%;
-            width: 0%; /* Dynamic */
-            background-color: var(--pixel-green);
-            box-shadow: inset -5px 0 0 #008000;
-            transition: width 1.5s steps(10); /* "Chunky" 2000s animation */
-        }
-
-        .progress-fill.gold {
-            background-color: #ffd700;
-            box-shadow: inset -5px 0 0 #b8860b;
-        }
-
-        /* --- LEADERBOARD --- */
-        .leaderboard-table {
-            width: 100%;
-            font-size: 10px;
-            border-collapse: collapse;
-        }
-
-        .leaderboard-table td {
-            padding: 12px 5px;
-            border-bottom: 2px solid #222;
-        }
-
-        .row-you {
-            background-color: #111;
-            color: var(--pixel-cyan);
-            border: 2px solid var(--pixel-cyan);
-        }
-
-        .rank-num { color: var(--pixel-pink); width: 30px; }
-
-        /* --- REWARD PANEL --- */
-        .reward-panel {
-            grid-column: span 2;
-            border-color: var(--pixel-pink);
-            text-align: center;
-        }
-
-        @media (max-width: 700px) { .reward-panel { grid-column: span 1; } }
-
-        .reward-text {
-            color: white;
-            font-size: 12px;
-            margin: 15px 0;
-        }
-
-        .reward-highlight {
-            color: var(--pixel-pink);
-            font-size: 16px;
-            text-shadow: 2px 2px 0px #500;
-            display: block;
-            margin-top: 10px;
-        }
-
-        /* --- SYSTEM INFO --- */
-        .footer-sync {
-            margin-top: 40px;
-            font-size: 8px;
-            text-align: center;
-            color: #555;
-            letter-spacing: 1px;
-        }
-
-        /* --- BLINK ANIMATION --- */
-        .blink {
-            animation: blinker 1s linear infinite;
-        }
-
-        @keyframes blinker {
-            50% { opacity: 0; }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pixel Quest Dashboard</title>
+  <!-- Retro pixel font (Press Start 2P) -->
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background-color: #000; /* dark background for neon theme */
+      color: #0f0;           /* neon green text */
+      font-family: 'Press Start 2P', cursive;
+      margin: 0; padding: 0;
+      text-shadow: 0 0 5px #0f0;
+    }
+    .dashboard {
+      position: relative;
+      padding: 20px;
+      margin: 20px;
+      border: 8px solid #39FF14; /* neon green border */
+    }
+    /* Pixel corner blocks (using ::before and ::after) */
+    .dashboard::before,
+    .dashboard::after {
+      content: "";
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: #39FF14;
+    }
+    .dashboard::before { /* top-left corner block */
+      top: -8px;
+      left: -8px;
+    }
+    .dashboard::after {  /* bottom-right corner block */
+      bottom: -8px;
+      right: -8px;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .player-info {
+      font-size: 1rem;
+    }
+    .progress-container {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    progress {
+      width: 150px;
+      height: 10px;
+      accent-color: #0f0; /* neon green progress bar */
+    }
+    .content {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .game {
+      flex: 2 1 300px;
+      display: flex;
+      justify-content: center;
+    }
+    #pacman {
+      image-rendering: pixelated;
+      background-color: #000;
+      border: 4px solid #39FF14;
+      box-shadow: 0 0 10px #0f0;
+    }
+    .leaderboard {
+      flex: 1 1 200px;
+      background: rgba(0,0,0,0.8);
+      padding: 10px;
+      border: 4px solid #39FF14;
+      box-shadow: 0 0 10px #0f0;
+    }
+    .leaderboard h2, .rewards h2 {
+      margin: 0 0 10px 0;
+      font-size: 1rem;
+      text-shadow: 0 0 5px #0f0;
+    }
+    .leaderboard ol {
+      padding-left: 20px;
+    }
+    .rewards {
+      margin-top: 20px;
+      background: rgba(0,0,0,0.8);
+      padding: 10px;
+      border: 4px solid #39FF14;
+      box-shadow: 0 0 10px #0f0;
+    }
+    /* Responsive layout: stack on narrow screens */
+    @media (max-width: 600px) {
+      .content { flex-direction: column; }
+    }
+  </style>
 </head>
 <body>
-
-<div class="game-wrapper">
-
-    <header class="hud-header">
-        <div style="display: flex; align-items: center; gap: 15px;">
-            <div class="stag-avatar">🦌</div>
-            <div>
-                <div class="player-name">PLAYER: STUDENT_42</div>
-                <div style="font-size: 8px; color: #888; margin-top: 5px;">CLASS: MATHEMATICS_PRO</div>
-            </div>
-        </div>
-        <div class="streak-counter">
-            <span class="blink" style="color:var(--pixel-pink)">!</span> STREAK: 03 WEEKS <span class="blink" style="color:var(--pixel-pink)">!</span>
-        </div>
+  <div class="dashboard">
+    <header class="header">
+      <div class="player-info">
+        Player: <span id="playerName">Jane Doe</span> 🦌
+      </div>
+      <div class="progress-container">
+        <label for="expProgress">Progress:</label>
+        <progress id="expProgress" value="40" max="100"></progress><span>40%</span>
+      </div>
     </header>
 
-    <div class="dashboard-grid">
-        
-        <div class="pixel-box">
-            <span class="label">Ascension Bar</span>
-            <div style="font-size: 14px; margin-bottom: 10px;">QUARTILE 2</div>
-            
-            <div class="progress-container">
-                <div class="progress-fill" id="quartile-bar" data-val="75%"></div>
-            </div>
-            
-            <div style="font-size: 8px; color: var(--pixel-green); text-align: right; margin-top: 5px;">
-                75% TO Q1 ASCENSION
-            </div>
-        </div>
-
-        <div class="pixel-box">
-            <span class="label">Arena Standings</span>
-            <table class="leaderboard-table">
-                <tr>
-                    <td class="rank-num">01</td>
-                    <td>STUDENT 89</td>
-                    <td style="text-align:right">1620 XP</td>
-                </tr>
-                <tr class="row-you">
-                    <td class="rank-num">02</td>
-                    <td>YOU (STU-42)</td>
-                    <td style="text-align:right">1450 XP</td>
-                </tr>
-                <tr>
-                    <td class="rank-num">03</td>
-                    <td>STUDENT 12</td>
-                    <td style="text-align:right">1380 XP</td>
-                </tr>
-                <tr>
-                    <td class="rank-num">04</td>
-                    <td>STUDENT 55</td>
-                    <td style="text-align:right">1210 XP</td>
-                </tr>
-            </table>
-        </div>
-
-        <div class="pixel-box">
-            <span class="label">Level Status</span>
-            <div style="font-size: 14px; color: var(--pixel-pink);">LVL: 07</div>
-            <div class="progress-container">
-                <div class="progress-fill gold" id="level-bar" data-val="40%"></div>
-            </div>
-            <div style="font-size: 8px; display: flex; justify-content: space-between;">
-                <span>LVL 7</span>
-                <span>LVL 8</span>
-            </div>
-        </div>
-
-        <div class="pixel-box reward-panel">
-            <span class="label">Final Boss Reward</span>
-            <div class="reward-text">
-                REACH <span style="color: var(--pixel-pink);">LEVEL 10</span> TO UNLOCK:
-                <span class="reward-highlight">5% EXAM GRADE BOOST</span>
-            </div>
-            <div style="font-size: 8px; color: #555;">STATUS: QUEST IN PROGRESS...</div>
-        </div>
-
+    <div class="content">
+      <section class="game">
+        <canvas id="pacman" width="300" height="300"></canvas>
+      </section>
+      <aside class="leaderboard">
+        <h2>Leaderboard</h2>
+        <ol>
+          <li>1. Alpha - 1500</li>
+          <li>2. Bravo - 1200</li>
+          <li>3. Charlie - 900</li>
+        </ol>
+      </aside>
     </div>
 
-    <footer class="footer-sync">
-        GITHUB_LINK_ID: OSK03_FY-06867178 <br>
-        SYSTEM_STATUS: <span id="sync-status">FETCHING_API_DATA...</span>
+    <footer class="rewards">
+      <h2>Rewards</h2>
+      <ul>
+        <li>🧮 Math Wizard Badge</li>
+        <li>🌟 500 XP</li>
+        <li>🥇 1st Quest Trophy</li>
+      </ul>
     </footer>
+  </div>
 
-</div>
+  <script>
+    // Canvas Pac-Man style mini-game
+    const canvas = document.getElementById('pacman');
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
 
-<script>
-    window.onload = () => {
-        // Pixel-style staggered loading
-        setTimeout(() => {
-            const quartileBar = document.getElementById('quartile-bar');
-            const levelBar = document.getElementById('level-bar');
-            
-            quartileBar.style.width = quartileBar.getAttribute('data-val');
-            levelBar.style.width = levelBar.getAttribute('data-val');
-        }, 600);
+    // Pac-Man setup
+    let pac = { x: W/2, y: H/2, r: 15, dx: 2, dy: 2 };
 
-        // Github Sync Verification
-        const statusEl = document.getElementById('sync-status');
-        const url = 'https://api.github.com/repos/OSK03/FY-06867178/commits';
+    // Random dots (pellets)
+    let dots = [];
+    for (let i = 0; i < 8; i++) {
+      dots.push({ x: Math.random()*(W-20)+10, y: Math.random()*(H-20)+10 });
+    }
 
-        fetch(url)
-            .then(response => response.json())
-            .then(commits => {
-                if (commits && commits.length > 0) {
-                    const lastDate = new Date(commits[0].commit.committer.date);
-                    statusEl.innerText = `STABLE // LAST_PUSH: ${lastDate.toLocaleDateString()}`;
-                }
-            })
-            .catch(() => {
-                statusEl.innerText = "LOCAL_CACHE_LOADED";
-            });
-    };
-</script>
+    // A simple ghost enemy
+    let ghost = { x: 50, y: 50, size: 20, dx: 1.5, dy: 1.2, color: 'red' };
 
+    function drawPacman() {
+      ctx.fillStyle = 'yellow';
+      ctx.beginPath();
+      ctx.arc(pac.x, pac.y, pac.r, 0.25*Math.PI, 1.75*Math.PI);
+      ctx.lineTo(pac.x, pac.y);
+      ctx.fill();
+    }
+    function drawGhost() {
+      ctx.fillStyle = ghost.color;
+      ctx.beginPath();
+      ctx.arc(ghost.x, ghost.y, ghost.size/2, Math.PI, 0);
+      ctx.fill();
+      ctx.fillRect(ghost.x-ghost.size/2, ghost.y, ghost.size, ghost.size/2);
+    }
+    function update() {
+      // Move Pac-Man
+      pac.x += pac.dx;
+      pac.y += pac.dy;
+      // Bounce off walls
+      if (pac.x - pac.r < 0 || pac.x + pac.r > W) pac.dx *= -1;
+      if (pac.y - pac.r < 0 || pac.y + pac.r > H) pac.dy *= -1;
+      // Move ghost
+      ghost.x += ghost.dx;
+      ghost.y += ghost.dy;
+      if (ghost.x < 0 || ghost.x > W) ghost.dx *= -1;
+      if (ghost.y < 0 || ghost.y > H) ghost.dy *= -1;
+      // Eat dots
+      dots = dots.filter(dot => {
+        const dist = Math.hypot(pac.x - dot.x, pac.y - dot.y);
+        return dist > pac.r; // if within Pac-Man radius, dot disappears
+      });
+    }
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      // Draw dots
+      ctx.fillStyle = '#fff';
+      dots.forEach(dot => ctx.fillRect(dot.x-3, dot.y-3, 6, 6));
+      // Draw Pac-Man and ghost
+      drawPacman();
+      drawGhost();
+    }
+    function loop() {
+      update();
+      draw();
+      requestAnimationFrame(loop);
+    }
+    // Arrow key control for Pac-Man
+    window.addEventListener('keydown', e => {
+      const speed = 2;
+      if (e.key === 'ArrowUp')    { pac.dx = 0;      pac.dy = -speed; }
+      if (e.key === 'ArrowDown')  { pac.dx = 0;      pac.dy = speed; }
+      if (e.key === 'ArrowLeft')  { pac.dx = -speed; pac.dy = 0;     }
+      if (e.key === 'ArrowRight') { pac.dx = speed;  pac.dy = 0;     }
+    });
+    loop();
+  </script>
 </body>
-</html>
+</html>     
