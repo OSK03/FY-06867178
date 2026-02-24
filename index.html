@@ -3,351 +3,375 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>LEGO Star Quest | SurreyLearn</title>
+    <title>SurreyLearn | Dungeon of Knowledge</title>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
         :root {
-            --pixel-blue: #00bfff;
-            --deep-blue: #003366;
-            --electric-blue: #1e90ff;
-            --light-blue: #66ccff;
-            --pixel-bg: #020617;
-            --panel-bg: rgba(5, 20, 40, 0.95);
-            --lego-yellow: #facc15;
-            --border-size: 4px;
+            --lava-orange: #ff6a00;
+            --ember-red: #b22222;
+            --gold-glow: #ffcc00;
+            --stone-dark: #1a1a1a;
+            --stone-mid: #2e2e2e;
+            --torch-yellow: #ffae00;
+            --shadow-black: #050505;
+            --panel-bg: rgba(20, 10, 5, 0.95);
         }
 
         * { box-sizing: border-box; image-rendering: pixelated; }
 
         body {
-            background-color: var(--pixel-bg);
-            color: white;
+            background-color: var(--shadow-black);
+            color: #ccc;
             font-family: 'Press Start 2P', cursive;
             margin: 0;
-            padding: 20px;
+            padding: 10px;
             display: flex;
             flex-direction: column;
             align-items: center;
             overflow: hidden;
         }
 
-        /* --- CRT Scanline Overlay --- */
+        /* --- CRT & Scanline Filter --- */
         body::before {
             content: " ";
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), 
-                        linear-gradient(90deg, rgba(0, 0, 255, 0.05), rgba(0, 255, 255, 0.02), rgba(0, 0, 255, 0.05));
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.2) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.05), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.05));
             z-index: 2000;
             background-size: 100% 3px, 3px 100%;
             pointer-events: none;
         }
 
-        .hud-top {
-            width: 100%;
-            max-width: 800px;
+        /* --- TOP HUD --- */
+        #hud-top {
+            width: 800px;
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            border: var(--border-size) solid var(--pixel-blue);
-            padding: 15px;
             background: var(--panel-bg);
-            margin-bottom: 10px;
+            border: 4px solid var(--ember-red);
+            padding: 10px;
+            margin-bottom: 5px;
+            box-shadow: 0 0 15px var(--ember-red);
         }
 
-        .stat-group { display: flex; flex-direction: column; gap: 5px; }
-        .stat-label { font-size: 8px; color: var(--light-blue); }
-        .stat-val { font-size: 10px; color: white; }
+        .stat-bar-container { width: 140px; margin-bottom: 5px; }
+        .bar-label { font-size: 8px; color: var(--gold-glow); margin-bottom: 4px; display: block; }
+        .bar-bg { background: #333; height: 10px; border: 1px solid #666; position: relative; }
+        .bar-fill { height: 100%; width: 0%; transition: width 0.5s; }
 
-        /* --- GAME CONTAINER --- */
-        #game-container {
+        /* --- GAME ARENA --- */
+        #game-wrapper {
             position: relative;
-            border: var(--border-size) solid var(--pixel-blue);
-            box-shadow: 0 0 20px var(--deep-blue);
+            width: 800px;
+            height: 500px;
+            border: 6px solid #444;
             background: #000;
+            overflow: hidden;
         }
 
-        canvas { display: block; background: #000; }
+        canvas { display: block; }
 
-        /* --- UI PROGRESS BARS --- */
-        .progress-wrapper { width: 150px; height: 16px; background: #111; border: 2px solid white; position: relative; }
-        .progress-fill { height: 100%; width: 0%; background: var(--pixel-blue); transition: width 1.5s steps(20); }
-
-        /* --- QUIZ OVERLAY --- */
-        #quiz-overlay {
+        /* --- QUIZ & DIALOGUE OVERLAY --- */
+        #overlay {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--panel-bg);
+            background: rgba(0,0,0,0.85);
             display: none;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            text-align: center;
-            padding: 20px;
             z-index: 100;
+            padding: 40px;
         }
 
-        .quiz-box { border: var(--border-size) solid var(--pixel-blue); padding: 20px; background: #000; width: 80%; }
-        .question-text { font-size: 12px; margin-bottom: 20px; line-height: 1.6; color: var(--light-blue); }
-        .answer-input { 
-            background: transparent; border: 2px solid white; color: white; 
-            font-family: 'Press Start 2P'; padding: 10px; width: 100px; text-align: center; margin-bottom: 20px;
-        }
-        .btn { 
-            background: var(--deep-blue); color: white; padding: 10px 20px; border: 2px solid var(--pixel-blue);
-            cursor: pointer; font-family: 'Press Start 2P'; font-size: 10px;
-        }
-        .btn:hover { background: var(--pixel-blue); }
-
-        .interaction-prompt {
-            position: absolute; bottom: 20px; width: 100%; text-align: center;
-            font-size: 8px; color: var(--pixel-blue); animation: blink 1s infinite;
+        .quiz-card {
+            background: var(--panel-bg);
+            border: 4px solid var(--gold-glow);
+            padding: 20px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 0 30px rgba(255, 204, 0, 0.3);
         }
 
-        @keyframes blink { 50% { opacity: 0; } }
+        #question-text { font-size: 14px; line-height: 1.8; color: #fff; margin-bottom: 20px; }
+        #explanation-text { font-size: 8px; color: var(--lava-orange); margin: 15px 0; display: none; }
         
-        /* Floating XP Effect */
-        .xp-float {
-            position: absolute; color: var(--pixel-blue); font-size: 10px;
-            animation: floatUp 1.5s forwards; pointer-events: none;
+        .ans-input {
+            background: #000; border: 2px solid var(--lava-orange); color: white;
+            font-family: 'Press Start 2P'; padding: 10px; text-align: center; width: 250px;
         }
-        @keyframes floatUp { from { transform: translateY(0); opacity: 1; } to { transform: translateY(-50px); opacity: 0; } }
 
+        .btn {
+            margin-top: 15px; background: var(--ember-red); color: white; border: 2px solid var(--gold-glow);
+            padding: 10px 20px; cursor: pointer; font-family: 'Press Start 2P'; font-size: 10px;
+        }
+        .btn:hover { background: var(--lava-orange); }
+
+        /* --- ANIMATIONS --- */
+        .shake { animation: shake 0.5s; }
+        @keyframes shake { 0%, 100% {transform: translate(0);} 25% {transform: translate(-5px);} 75% {transform: translate(5px);} }
+        
+        .gold-flash { animation: flash 0.5s; }
+        @keyframes flash { 0% {background: var(--gold-glow);} 100% {background: transparent;} }
     </style>
 </head>
 <body>
 
-    <div class="hud-top">
-        <div class="stat-group">
-            <span class="stat-label">PADAWAN_ALIAS</span>
-            <span class="stat-val">STUDENT_42</span>
-        </div>
-        <div class="stat-group">
-            <span class="stat-label">QUARTILE ASCENSION</span>
-            <div class="progress-wrapper">
-                <div id="q-bar" class="progress-fill"></div>
+    <div id="hud-top">
+        <div>
+            <div class="stat-bar-container">
+                <span class="bar-label">HP</span>
+                <div class="bar-bg"><div id="hp-bar" class="bar-fill" style="background: var(--ember-red);"></div></div>
             </div>
-            <span id="q-text" style="font-size: 7px; color: var(--pixel-blue);">RANK: Q4</span>
+            <div class="stat-bar-container">
+                <span class="bar-label">XP: <span id="rank-name">Beginner</span></span>
+                <div class="bar-bg"><div id="xp-bar" class="bar-fill" style="background: var(--gold-glow);"></div></div>
+            </div>
         </div>
-        <div class="stat-group">
-            <span class="stat-label">XP LEVEL: <span id="lvl-text">7</span></span>
-            <div class="progress-wrapper">
-                <div id="xp-bar" class="progress-fill" style="background: var(--lego-yellow);"></div>
+        <div style="text-align: center;">
+            <div style="font-size: 12px; color: var(--gold-glow); margin-bottom: 5px;">LVL <span id="lvl-val">1</span></div>
+            <div style="font-size: 7px;">STREAK: <span id="streak-val">0</span></div>
+        </div>
+        <div>
+            <div class="stat-bar-container">
+                <span class="bar-label">INTELLECT</span>
+                <div style="font-size: 10px; color: white;" id="intel-val">10</div>
+            </div>
+            <div class="stat-bar-container">
+                <span class="bar-label">FOCUS</span>
+                <div style="font-size: 10px; color: white;" id="focus-val">10</div>
             </div>
         </div>
     </div>
 
-    <div id="game-container">
-        <canvas id="quest-canvas" width="600" height="400"></canvas>
-        <div id="prompt" class="interaction-prompt"></div>
+    <div id="game-wrapper">
+        <canvas id="dungeon-canvas" width="800" height="500"></canvas>
         
-        <div id="quiz-overlay">
-            <div class="quiz-box">
-                <div id="quiz-topic" style="font-size: 8px; color: var(--pixel-blue); margin-bottom: 10px;">TOPIC</div>
-                <div class="question-text" id="q-display">3x + 7 = 19?</div>
-                <input type="text" id="ans-input" class="answer-input" placeholder="?">
-                <br>
-                <button class="btn" onclick="checkAnswer()">SUBMIT_DATA</button>
+        <div id="overlay">
+            <div id="enemy-sprite" style="font-size: 40px; margin-bottom: 20px;">💀</div>
+            <div class="quiz-card" id="quiz-card">
+                <div id="topic-header" style="font-size: 8px; color: var(--lava-orange); margin-bottom: 10px;">VAULT OF CALCULUS</div>
+                <div id="question-text">Loading rune...</div>
+                <input type="text" id="ans-input" class="ans-input" autocomplete="off">
+                <div id="explanation-text"></div>
+                <div id="action-btns">
+                    <button class="btn" onclick="checkAnswer()">REFORGE KNOWLEDGE</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <div style="font-size: 7px; color: #444; margin-top: 15px;">[ARROWS] TO MOVE // [SPACE] TO ENTER QUEST DOOR</div>
+    <div style="font-size: 8px; color: #555; margin-top: 10px;">[ARROWS] MOVE // [SPACE] ENTER PORTAL</div>
 
 <script>
-    const canvas = document.getElementById('quest-canvas');
+    const canvas = document.getElementById('dungeon-canvas');
     const ctx = canvas.getContext('2d');
-    const promptEl = document.getElementById('prompt');
 
-    // --- GAME STATE ---
-    let state = "LIBRARY"; // LIBRARY or QUIZ
-    let xp = 150;
-    let currentQuest = null;
-    let currentQuestion = null;
-    let stars = [];
-
-    const player = {
-        x: 285, y: 300, w: 24, h: 28, speed: 3,
-        dir: "down", frame: 0
+    // --- RPG STATE ---
+    let player = {
+        x: 400, y: 350, w: 28, h: 36, speed: 3, 
+        hp: 100, xp: 0, level: 1, intel: 10, focus: 10, streak: 0,
+        lightRadius: 150
     };
 
-    const quests = [
-        { id: 1, name: "ALGEBRA TEMPLE", topic: "algebra", x: 80, y: 60, w: 60, h: 80, color: "#00bfff" },
-        { id: 2, name: "CALCULUS CHAMBER", topic: "calculus", x: 460, y: 60, w: 60, h: 80, color: "#1e90ff" },
-        { id: 3, name: "MATRIX VAULT", topic: "matrices", x: 80, y: 220, w: 60, h: 80, color: "#66ccff" },
-        { id: 4, name: "ODE SANCTUM", topic: "ode", x: 460, y: 220, w: 60, h: 80, color: "#003366" }
+    let state = "DUNGEON"; // DUNGEON, QUIZ, FEEDBACK
+    let currentQ = null;
+
+    const portals = [
+        { name: "CHAMBER OF ALGEBRAIC TRIALS", topic: "algebra", x: 150, y: 120, color: "#ff6a00" },
+        { name: "VAULT OF CALCULUS", topic: "calculus", x: 650, y: 120, color: "#ffae00" },
+        { name: "MATRIX CATACOMBS", topic: "matrices", x: 150, y: 380, color: "#b22222" },
+        { name: "ODE ABYSS", topic: "ode", x: 650, y: 380, color: "#ffcc00" }
     ];
 
-    const walls = [
-        { x: 200, y: 50, w: 200, h: 40 }, // Top bookshelf
-        { x: 200, y: 240, w: 200, h: 40 } // Middle bookshelf
+    const obstacles = [
+        { x: 300, y: 200, w: 200, h: 40 }, // Collapsed bookshelf
     ];
 
-    // --- INITIALIZE ---
-    for(let i=0; i<30; i++) stars.push({ x: Math.random()*600, y: Math.random()*400, s: Math.random()*2 });
+    // --- ADVANCED MATH GENERATOR ---
+    function generateMath(topic) {
+        const a = Math.floor(Math.random() * 5) + 2;
+        const b = Math.floor(Math.random() * 10) + 1;
+        
+        switch(topic) {
+            case 'algebra':
+                return { q: `Solve for x: (3x - ${b}) / (x + 2) = ${a}`, a: Math.round((2*a + b)/(3-a)).toString(), exp: "Multiply both sides by (x+2) and group terms." };
+            case 'calculus':
+                return { q: `Find ∫ (${a}x + ${b}) dx`, a: `${a/2}x^2+${b}x`, exp: "Use power rule: ∫ x^n dx = x^(n+1)/(n+1)." };
+            case 'matrices':
+                return { q: `Find determinant of [[${a},1],[${b},2]]`, a: (a*2 - b).toString(), exp: "Det = (ad - bc)." };
+            case 'ode':
+                return { q: `Solve y' - ${a}y = 0`, a: `e^${a}x`, exp: "Integrating factor method or standard exponential form." };
+        }
+    }
 
+    // --- INPUT HANDLER ---
     const keys = {};
-    window.addEventListener('keydown', e => keys[e.code] = true);
+    window.addEventListener('keydown', e => { 
+        keys[e.code] = true;
+        if(e.code === 'Space' && state === "DUNGEON") tryEnterPortal();
+    });
     window.addEventListener('keyup', e => keys[e.code] = false);
 
-    // --- MATH GENERATOR ---
-    function generateEquation(topic) {
-        let a = Math.floor(Math.random()*10)+2;
-        let b = Math.floor(Math.random()*15)+1;
-        if(topic === 'algebra') {
-            let res = a * 3 + b;
-            return { q: `Solve for x: ${a}x + ${b} = ${res}`, a: "3" };
-        } else if(topic === 'calculus') {
-            return { q: `d/dx of ${a}x^2 + ${b}x`, a: `${a*2}x+${b}`.replace('+-','-') };
-        } else if(topic === 'matrices') {
-            return { q: `Det of [[${a},1],[2,3]]`, a: (a*3 - 2).toString() };
-        } else {
-            return { q: `Solve dy/dx = ${a}y`, a: `e^${a}x` };
+    function tryEnterPortal() {
+        const portal = portals.find(p => Math.hypot(player.x - p.x, player.y - p.y) < 60);
+        if(portal) {
+            state = "QUIZ";
+            currentQ = generateMath(portal.topic);
+            document.getElementById('topic-header').innerText = portal.name;
+            document.getElementById('question-text').innerText = currentQ.q;
+            document.getElementById('overlay').style.display = 'flex';
+            document.getElementById('ans-input').value = "";
+            document.getElementById('ans-input').focus();
+            document.getElementById('explanation-text').style.display = 'none';
         }
-    }
-
-    // --- GAME ENGINE ---
-    function update() {
-        if(state !== "LIBRARY") return;
-
-        let nextX = player.x;
-        let nextY = player.y;
-
-        if(keys['ArrowUp']) { nextY -= player.speed; player.dir = "up"; }
-        if(keys['ArrowDown']) { nextY += player.speed; player.dir = "down"; }
-        if(keys['ArrowLeft']) { nextX -= player.speed; player.dir = "left"; }
-        if(keys['ArrowRight']) { nextX += player.speed; player.dir = "right"; }
-
-        // Wall Collision
-        let hitWall = walls.some(w => (nextX < w.x + w.w && nextX + player.w > w.x && nextY < w.y + w.h && nextY + player.h > w.y));
-        if(!hitWall) {
-            player.x = Math.max(0, Math.min(600-player.w, nextX));
-            player.y = Math.max(0, Math.min(400-player.h, nextY));
-        }
-
-        // Quest Detection
-        let nearQuest = quests.find(q => Math.hypot(player.x - q.x, player.y - q.y) < 60);
-        if(nearQuest) {
-            promptEl.innerText = `PRESS [SPACE] TO ENTER ${nearQuest.name}`;
-            if(keys['Space']) startQuest(nearQuest);
-        } else {
-            promptEl.innerText = "";
-        }
-    }
-
-    function startQuest(q) {
-        state = "QUIZ";
-        currentQuest = q;
-        currentQuestion = generateEquation(q.topic);
-        document.getElementById('quiz-topic').innerText = q.name;
-        document.getElementById('q-display').innerText = currentQuestion.q;
-        document.getElementById('quiz-overlay').style.display = 'flex';
-        document.getElementById('ans-input').value = "";
-        document.getElementById('ans-input').focus();
     }
 
     function checkAnswer() {
-        let input = document.getElementById('ans-input').value.trim();
-        if(input === currentQuestion.a) {
-            xp += 50;
-            createXPFloat();
-            updateUI();
-        }
-        document.getElementById('quiz-overlay').style.display = 'none';
-        state = "LIBRARY";
-    }
-
-    function createXPFloat() {
-        const div = document.createElement('div');
-        div.className = 'xp-float';
-        div.innerText = '+50 XP';
-        div.style.left = player.x + 'px';
-        div.style.top = player.y + 'px';
-        document.getElementById('game-container').appendChild(div);
-        setTimeout(() => div.remove(), 1500);
-    }
-
-    function updateUI() {
-        let qBar = document.getElementById('q-bar');
-        let xpBar = document.getElementById('xp-bar');
-        let qText = document.getElementById('q-text');
-
-        // XP / Level logic
-        let lvl = Math.floor(xp / 100) + 1;
-        document.getElementById('lvl-text').innerText = lvl;
-        xpBar.style.width = (xp % 100) + "%";
-
-        // Quartile Logic
-        let q = "Q4";
-        let color = "#ef4444";
-        if(xp >= 700) { q = "Q1"; color = varProp('--pixel-blue'); }
-        else if(xp >= 400) { q = "Q2"; color = varProp('--electric-blue'); }
-        else if(xp >= 200) { q = "Q3"; color = varProp('--deep-blue'); }
+        const input = document.getElementById('ans-input').value.trim();
+        const feedback = document.getElementById('explanation-text');
         
-        qText.innerText = `RANK: ${q}`;
-        qBar.style.width = Math.min(100, (xp/700)*100) + "%";
+        if(input == currentQ.a) {
+            player.xp += (25 * (player.intel/10));
+            player.streak++;
+            player.intel += 1;
+            document.getElementById('game-wrapper').classList.add('gold-flash');
+            setTimeout(() => document.getElementById('game-wrapper').classList.remove('gold-flash'), 500);
+            closeQuiz();
+        } else {
+            player.hp -= Math.max(5, 20 - player.focus);
+            player.streak = 0;
+            player.focus -= 1;
+            document.getElementById('game-wrapper').classList.add('shake');
+            setTimeout(() => document.getElementById('game-wrapper').classList.remove('shake'), 500);
+            feedback.innerText = "INCORRECT. Step: " + currentQ.exp;
+            feedback.style.display = 'block';
+            if(player.hp < 50) player.hp = 50; // Safety floor
+        }
+        updateHUD();
     }
-    
-    function varProp(name) { return getComputedStyle(document.documentElement).getPropertyValue(name); }
 
-    // --- DRAWING ---
+    function closeQuiz() {
+        state = "DUNGEON";
+        document.getElementById('overlay').style.display = 'none';
+    }
+
+    function updateHUD() {
+        document.getElementById('hp-bar').style.width = player.hp + "%";
+        
+        // Leveling & XP
+        player.level = Math.floor(player.xp / 100) + 1;
+        document.getElementById('xp-bar').style.width = (player.xp % 100) + "%";
+        document.getElementById('lvl-val').innerText = player.level;
+        
+        // Quartile Naming
+        const rank = document.getElementById('rank-name');
+        if(player.xp < 200) rank.innerText = "Beginner of Depths";
+        else if(player.xp < 400) rank.innerText = "Apprentice of Flame";
+        else if(player.xp < 700) rank.innerText = "Keeper of Runes";
+        else rank.innerText = "Master Archive";
+
+        document.getElementById('streak-val').innerText = player.streak;
+        document.getElementById('intel-val').innerText = player.intel;
+        document.getElementById('focus-val').innerText = Math.max(1, player.focus);
+    }
+
+    // --- RENDER LOOP ---
     function draw() {
-        ctx.fillStyle = "#020617";
-        ctx.fillRect(0,0,600,400);
+        // 1. Background (Floor)
+        ctx.fillStyle = "#0a0502";
+        ctx.fillRect(0,0,800,500);
 
-        // Floor Grid
-        ctx.strokeStyle = "#001a33";
-        for(let i=0; i<600; i+=40) { ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,400); ctx.stroke(); }
-        for(let i=0; i<400; i+=40) { ctx.beginPath(); ctx.moveTo(0,i); ctx.lineTo(600,i); ctx.stroke(); }
+        // Floor Tiles
+        ctx.strokeStyle = "#1a0d05";
+        ctx.lineWidth = 1;
+        for(let x=0; x<800; x+=40) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,500); ctx.stroke(); }
+        for(let y=0; y<500; y+=40) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(800,y); ctx.stroke(); }
 
-        // Stars
-        ctx.fillStyle = "white";
-        stars.forEach(s => {
-            ctx.fillRect(s.x, s.y, s.s, s.s);
-            s.y += 0.2; if(s.y > 400) s.y = 0;
-        });
+        // 2. Lava Cracks (Animated)
+        ctx.fillStyle = "#ff2a00";
+        for(let i=0; i<5; i++) {
+            let flicker = Math.random() * 5;
+            ctx.shadowBlur = 10 + flicker;
+            ctx.shadowColor = "red";
+            ctx.fillRect(100 + i*150, 245, 80, 4);
+        }
+        ctx.shadowBlur = 0;
 
-        // Bookshelves (LEGO Style)
-        ctx.fillStyle = "#4a2c10";
-        walls.forEach(w => {
-            ctx.fillRect(w.x, w.y, w.w, w.h);
-            ctx.strokeStyle = "#2b1808";
-            ctx.strokeRect(w.x, w.y, w.w, w.h);
-        });
+        // 3. Obstacles
+        ctx.fillStyle = "#2e1a0a";
+        obstacles.forEach(o => ctx.fillRect(o.x, o.y, o.w, o.h));
 
-        // Quest Doors
-        quests.forEach(q => {
-            ctx.shadowBlur = 15; ctx.shadowColor = q.color;
-            ctx.fillStyle = q.color;
-            ctx.fillRect(q.x, q.y, q.w, q.h);
-            ctx.shadowBlur = 0;
+        // 4. Portals
+        portals.forEach(p => {
+            let pulse = Math.sin(Date.now()/300) * 10;
+            ctx.shadowBlur = 20 + pulse;
+            ctx.shadowColor = p.color;
+            ctx.strokeStyle = p.color;
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, 30 + pulse/2, 0, Math.PI*2);
+            ctx.stroke();
+            // Floating Runes
             ctx.fillStyle = "white";
             ctx.font = "6px 'Press Start 2P'";
-            ctx.fillText(q.name.split(' ')[0], q.x, q.y - 10);
+            ctx.fillText("Ω", p.x - 5, p.y - 45 + pulse);
         });
+        ctx.shadowBlur = 0;
 
-        // LEGO Player
-        // Torso
-        ctx.fillStyle = varProp('--deep-blue');
-        ctx.fillRect(player.x + 4, player.y + 10, 16, 12);
+        // 5. Player (LEGO Warrior)
+        // Cape
+        ctx.fillStyle = "#800";
+        ctx.fillRect(player.x - 4, player.y + 12, 36, 24);
+        // Armor
+        ctx.fillStyle = "#444";
+        ctx.fillRect(player.x, player.y + 10, 28, 20);
         // Head
-        ctx.fillStyle = "#facc15";
-        ctx.fillRect(player.x + 6, player.y, 12, 10);
-        // Lightsaber
-        ctx.strokeStyle = varProp('--pixel-blue');
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(player.x + 20, player.y + 10);
-        ctx.lineTo(player.x + 20, player.y - 15);
-        ctx.stroke();
+        ctx.fillStyle = "#ffcc00";
+        ctx.fillRect(player.x + 6, player.y, 16, 14);
+        // Staff
+        ctx.fillStyle = "#630";
+        ctx.fillRect(player.x + 28, player.y - 10, 4, 40);
+        ctx.fillStyle = varProp('--gold-glow');
+        ctx.shadowBlur = 15; ctx.shadowColor = "yellow";
+        ctx.fillRect(player.x + 26, player.y - 15, 8, 8);
+        ctx.shadowBlur = 0;
 
-        requestAnimationFrame(() => {
-            update();
-            draw();
-        });
+        // 6. Dynamic Lighting (Fog of War)
+        const gradient = ctx.createRadialGradient(player.x + 14, player.y + 18, 20, player.x + 14, player.y + 18, player.lightRadius);
+        gradient.addColorStop(0, 'rgba(0,0,0,0)');
+        gradient.addColorStop(1, 'rgba(0,0,0,0.95)');
+        ctx.fillStyle = gradient;
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.fillRect(0, 0, 800, 500);
+
+        if(state === "DUNGEON") updatePlayer();
+
+        requestAnimationFrame(draw);
     }
 
-    updateUI();
+    function updatePlayer() {
+        let dx = 0, dy = 0;
+        if(keys['ArrowUp']) dy = -player.speed;
+        if(keys['ArrowDown']) dy = player.speed;
+        if(keys['ArrowLeft']) dx = -player.speed;
+        if(keys['ArrowRight']) dx = player.speed;
+
+        let nextX = player.x + dx;
+        let nextY = player.y + dy;
+
+        // Bounds + Obstacle Collision
+        const hit = obstacles.some(o => (nextX < o.x + o.w && nextX + player.w > o.x && nextY < o.y + o.h && nextY + player.h > o.y));
+        if(!hit) {
+            player.x = Math.max(20, Math.min(760, nextX));
+            player.y = Math.max(20, Math.min(460, nextY));
+        }
+    }
+
+    function varProp(name) { return getComputedStyle(document.documentElement).getPropertyValue(name); }
+
+    updateHUD();
     draw();
 </script>
 
