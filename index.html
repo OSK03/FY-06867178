@@ -3,18 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>SurreyLearn | Dungeon of Infinite Knowledge</title>
+    <title>Dungeon of Infinite Knowledge</title>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
         :root {
             --lava-orange: #ff6a00;
             --ember-red: #b22222;
             --gold-glow: #ffcc00;
-            --stone-dark: #1a1a1a;
             --stone-mid: #3a3a3a;
-            --torch-yellow: #ffae00;
             --shadow-black: #050505;
-            --light-mode-gold: rgba(255, 204, 0, 0.2);
+            --rune-blue: #00e5ff;
+            --rune-purple: #b300ff;
             --panel-bg: rgba(20, 10, 5, 0.95);
         }
 
@@ -30,6 +29,7 @@
             flex-direction: column;
             align-items: center;
             overflow: hidden;
+            user-select: none;
         }
 
         /* --- CRT Filter --- */
@@ -56,9 +56,9 @@
         }
 
         .bar-container { margin-bottom: 8px; }
-        .bar-label { font-size: 7px; color: var(--gold-glow); margin-bottom: 4px; display: block; }
-        .bar-bg { background: #222; height: 12px; border: 1px solid #444; position: relative; }
-        .bar-fill { height: 100%; width: 0%; transition: width 0.4s steps(10); }
+        .bar-label { font-size: 8px; color: var(--gold-glow); margin-bottom: 4px; display: block; }
+        .bar-bg { background: #222; height: 14px; border: 2px solid #444; position: relative; }
+        .bar-fill { height: 100%; width: 0%; transition: width 0.2s ease-out; }
 
         #game-wrapper {
             position: relative;
@@ -66,48 +66,11 @@
             height: 500px;
             border: 6px solid var(--stone-mid);
             background: #000;
+            box-shadow: 0 0 20px rgba(255, 204, 0, 0.1);
         }
 
-        /* --- QUIZ SYSTEM --- */
-        #overlay {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9);
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 100;
-        }
-
-        .quiz-card {
-            background: #0a0a0a;
-            border: 4px solid var(--ember-red);
-            padding: 25px;
-            width: 85%;
-            text-align: center;
-        }
-
-        #q-text { font-size: 12px; line-height: 1.6; color: #fff; margin-bottom: 20px; }
-        .ans-input {
-            background: #000; border: 2px solid var(--stone-mid); color: var(--gold-glow);
-            font-family: 'Press Start 2P'; padding: 12px; text-align: center; width: 300px;
-        }
-
-        .btn {
-            margin-top: 15px; background: var(--ember-red); color: white; border: 2px solid var(--gold-glow);
-            padding: 10px 20px; cursor: pointer; font-family: 'Press Start 2P'; font-size: 9px;
-        }
-
-        #hint-text { font-size: 7px; color: #888; margin-top: 15px; display: none; }
-
-        /* --- LIGHT MODE EFFECT --- */
-        .light-mode-active {
-            box-shadow: inset 0 0 100px var(--gold-glow);
-        }
-
-        .shake { animation: shake 0.3s; }
-        @keyframes shake { 0% {left:2px;} 50% {left:-2px;} 100% {left:0;} }
+        .shake { animation: shake 0.2s; }
+        @keyframes shake { 0% {left:5px;} 25% {left:-5px;} 50% {top:5px;} 75% {top:-5px;} 100% {left:0; top:0;} }
     </style>
 </head>
 <body id="main-body">
@@ -116,303 +79,8 @@
         <div>
             <div class="bar-container">
                 <span class="bar-label">VITALITY (HP)</span>
-                <div class="bar-bg"><div id="hp-bar" class="bar-fill" style="background: var(--ember-red);"></div></div>
+                <div class="bar-bg"><div id="hp-bar" class="bar-fill" style="background: var(--ember-red); width: 100%;"></div></div>
             </div>
             <div class="bar-container">
-                <span class="bar-label">MASTERY: <span id="rank-name">NOVICE</span></span>
-                <div class="bar-bg"><div id="xp-bar" class="bar-fill" style="background: var(--gold-glow);"></div></div>
-            </div>
-        </div>
-        <div style="text-align: center;">
-            <div style="font-size: 14px; color: var(--gold-glow);">LVL <span id="lvl-val">1</span></div>
-            <div style="font-size: 7px; margin-top: 8px;">STREAK: <span id="streak-val">0</span></div>
-        </div>
-        <div>
-            <div class="bar-container">
-                <span class="bar-label">INTELLECT: <span id="intel-val">10</span></span>
-                <span class="bar-label">FOCUS: <span id="focus-val">10</span></span>
-            </div>
-            <div id="status-tag" style="font-size: 6px; color: var(--lava-orange);">STATUS: NORMAL</div>
-        </div>
-    </div>
-
-    <div id="game-wrapper">
-        <canvas id="master-canvas" width="800" height="500"></canvas>
-        
-        <div id="overlay">
-            <div class="quiz-card">
-                <div id="topic-tag" style="font-size: 8px; color: var(--lava-orange); margin-bottom: 10px;">TOPIC</div>
-                <div id="q-text">EQUATION</div>
-                <input type="text" id="ans-input" class="ans-input" placeholder="Type Answer..." autocomplete="off">
-                <div id="hint-text"></div>
-                <div>
-                    <button class="btn" onclick="processAttempt()">VALIDATE_KNOWLEDGE</button>
-                    <button class="btn" style="background:#333;" onclick="closeQuiz()">RETREAT</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <p style="font-size: 7px; color: #666; margin-top: 10px;">[ARROWS] EXPLORE // [SPACE] ENTER PORTAL // BEWARE THE DEVOURER</p>
-
-<script>
-    const canvas = document.getElementById('master-canvas');
-    const ctx = canvas.getContext('2d');
-
-    // --- SYSTEM STATE ---
-    let gameState = "DUNGEON"; 
-    let lightMode = false;
-    let lightModeTimer = 0;
-    let idleTimer = 0;
-
-    let player = {
-        x: 400, y: 350, w: 28, h: 36, speed: 3.5, 
-        hp: 100, xp: 0, level: 1, intel: 10, focus: 10, streak: 0,
-        lightRadius: 180 
-    };
-
-    let devourer = {
-        x: 100, y: 100, w: 30, h: 30, speed: 1.2, state: "ROAM",
-        targetX: 100, targetY: 100, sizeMult: 1
-    };
-
-    // Terrain Details (Procedural Generation)
-    const terrain = [];
-    for(let i=0; i<25; i++) terrain.push({ x: Math.random()*800, y: Math.random()*500, type: Math.random() > 0.5 ? 'moss' : 'rock', size: 5 + Math.random()*10 });
-
-    const portals = [
-        { name: "ALGEBRA CRYPT", topic: "algebra", x: 100, y: 100, color: "#ff6a00", difficulty: "LEVEL 1" },
-        { name: "CALCULUS CHAMBER", topic: "calculus", x: 700, y: 100, color: "#ffae00", difficulty: "LEVEL 3" },
-        { name: "MATRIX ALCOVE", topic: "matrices", x: 100, y: 400, color: "#b22222", difficulty: "LEVEL 2" },
-        { name: "ODE ABYSS", topic: "ode", x: 700, y: 400, color: "#ffcc00", difficulty: "LEVEL 5" }
-    ];
-
-    // --- MATH VALIDATION ENGINE ---
-    function normalize(val) {
-        return val.toLowerCase().replace(/\s+/g, '').replace(/\^/g, '**').replace(/exp/g, 'e**');
-    }
-
-    function generateAdvancedQuest(topic) {
-        const a = Math.floor(Math.random() * 5) + 2;
-        const b = Math.floor(Math.random() * 8) + 1;
-        
-        switch(topic) {
-            case 'algebra':
-                return { q: `Find x: ${a}x + ${b} = ${a*3 + b}`, a: "3", hint: "Subtract constants first, then divide." };
-            case 'calculus':
-                return { q: `Evaluate d/dx of ${a}x^3 + ${b}`, a: `${a*3}x**2`, hint: "Power rule: multiply by exponent, then decrease it." };
-            case 'matrices':
-                return { q: `Det of [[${a},1],[2,${b}]]`, a: (a*b - 2).toString(), hint: "Formula: (ad - bc)." };
-            case 'ode':
-                return { q: `Solve dy/dx = ${a}y`, a: `ce**${a}x`, hint: "Standard form: y = Ce^(ax)." };
-        }
-    }
-
-    let currentQuest = null;
-
-    // --- AI ENGINE (THE DEVOURER) ---
-    function updateDevourer() {
-        if (lightMode) { devourer.x = -100; return; }
-
-        const distToPlayer = Math.hypot(player.x - devourer.x, player.y - devourer.y);
-        
-        // Behavior State Machine
-        if (idleTimer > 10 * 60 || distToPlayer < 150) {
-            devourer.state = "CHASE";
-            devourer.speed = 1.8 - (player.focus / 100); // Higher focus slows devourer
-        } else {
-            devourer.state = "ROAM";
-            devourer.speed = 1.0;
-        }
-
-        if (devourer.state === "CHASE") {
-            let angle = Math.atan2(player.y - devourer.y, player.x - devourer.x);
-            devourer.x += Math.cos(angle) * devourer.speed;
-            devourer.y += Math.sin(angle) * devourer.speed;
-        } else {
-            if (Math.hypot(devourer.x - devourer.targetX, devourer.y - devourer.targetY) < 5) {
-                devourer.targetX = Math.random() * 800;
-                devourer.targetY = Math.random() * 500;
-            }
-            let angle = Math.atan2(devourer.targetY - devourer.y, devourer.targetX - devourer.x);
-            devourer.x += Math.cos(angle) * devourer.speed;
-            devourer.y += Math.sin(angle) * devourer.speed;
-        }
-
-        // Collision
-        if (distToPlayer < 25) {
-            player.hp -= 0.5;
-            player.focus = Math.max(1, player.focus - 0.1);
-            document.getElementById('game-wrapper').classList.add('shake');
-            setTimeout(() => document.getElementById('game-wrapper').classList.remove('shake'), 200);
-            updateHUD();
-        }
-    }
-
-    // --- GAME LOOP & CONTROLS ---
-    const keys = {};
-    window.addEventListener('keydown', e => {
-        keys[e.code] = true;
-        idleTimer = 0;
-        if(e.code === 'Space' && gameState === "DUNGEON") tryEnterPortal();
-    });
-    window.addEventListener('keyup', e => keys[e.code] = false);
-
-    function tryEnterPortal() {
-        const portal = portals.find(p => Math.hypot(player.x - p.x, player.y - p.y) < 60);
-        if(portal) {
-            gameState = "QUIZ";
-            currentQuest = generateAdvancedQuest(portal.topic);
-            document.getElementById('topic-tag').innerText = portal.name + " (" + portal.difficulty + ")";
-            document.getElementById('q-text').innerText = currentQuest.q;
-            document.getElementById('overlay').style.display = 'flex';
-            document.getElementById('ans-input').value = "";
-            document.getElementById('ans-input').focus();
-            document.getElementById('hint-text').style.display = 'none';
-        }
-    }
-
-    function processAttempt() {
-        const input = normalize(document.getElementById('ans-input').value);
-        const correct = normalize(currentQuest.a);
-
-        if (input === correct || (input.includes(correct) && topic === 'ode')) {
-            // Victory
-            let xpGain = lightMode ? 100 : 50;
-            player.xp += xpGain;
-            player.intel += 2;
-            player.focus += 5;
-            player.streak++;
-            devourer.sizeMult = Math.max(0.5, devourer.sizeMult - 0.2);
-            
-            // Level Up Check
-            if (player.xp >= 100) {
-                player.xp = 0;
-                player.level++;
-                activateLightMode();
-            }
-            closeQuiz();
-        } else {
-            // Failure
-            player.focus = Math.max(1, player.focus - 5);
-            player.streak = 0;
-            devourer.sizeMult += 0.3;
-            document.getElementById('hint-text').innerText = "HINT: " + currentQuest.hint;
-            document.getElementById('hint-text').style.display = 'block';
-        }
-        updateHUD();
-    }
-
-    function activateLightMode() {
-        lightMode = true;
-        lightModeTimer = 20 * 60; // 20 seconds at 60fps
-        document.getElementById('status-tag').innerText = "STATUS: RADIANT LIGHT (2x XP)";
-        document.getElementById('status-tag').style.color = "var(--gold-glow)";
-    }
-
-    function closeQuiz() {
-        gameState = "DUNGEON";
-        document.getElementById('overlay').style.display = 'none';
-    }
-
-    function updateHUD() {
-        document.getElementById('hp-bar').style.width = player.hp + "%";
-        document.getElementById('xp-bar').style.width = (player.xp % 100) + "%";
-        document.getElementById('lvl-val').innerText = player.level;
-        document.getElementById('intel-val').innerText = player.intel;
-        document.getElementById('focus-val').innerText = Math.floor(player.focus);
-        document.getElementById('streak-val').innerText = player.streak;
-
-        const rank = document.getElementById('rank-name');
-        if(player.level > 5) rank.innerText = "MASTER ARCHIVE";
-        else if(player.level > 3) rank.innerText = "KEEPER OF RUNES";
-        else rank.innerText = "NOVICE";
-    }
-
-    // --- RENDERING ENGINE ---
-    function render() {
-        // 1. Clear & Background
-        ctx.fillStyle = lightMode ? "#1a1500" : "#0a0805";
-        ctx.fillRect(0,0,800,500);
-
-        // 2. Terrain & Tiles
-        ctx.strokeStyle = lightMode ? "#332a00" : "#1a1308";
-        for(let x=0; x<800; x+=40) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,500); ctx.stroke(); }
-        for(let y=0; y<500; y+=40) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(800,y); ctx.stroke(); }
-
-        terrain.forEach(t => {
-            ctx.fillStyle = t.type === 'moss' ? "#1a2e0a" : "#2e2e2e";
-            ctx.fillRect(t.x, t.y, t.size, t.size);
-        });
-
-        // 3. Portals
-        portals.forEach(p => {
-            ctx.shadowBlur = 15; ctx.shadowColor = p.color;
-            ctx.strokeStyle = p.color; ctx.lineWidth = 3;
-            ctx.beginPath(); ctx.arc(p.x, p.y, 30, 0, Math.PI*2); ctx.stroke();
-            ctx.fillStyle = "white"; ctx.font = "6px 'Press Start 2P'";
-            ctx.fillText(p.name, p.x - 30, p.y - 45);
-        });
-        ctx.shadowBlur = 0;
-
-        // 4. Knowledge Devourer (Enemy)
-        if (!lightMode) {
-            ctx.fillStyle = "rgba(255, 0, 0, 0.4)";
-            ctx.beginPath();
-            ctx.arc(devourer.x, devourer.y, 20 * devourer.sizeMult, 0, Math.PI*2);
-            ctx.fill();
-            ctx.fillStyle = "black";
-            ctx.fillRect(devourer.x - 5, devourer.y - 5, 10, 10); // The "eye"
-        }
-
-        // 5. Player
-        ctx.fillStyle = "#ffcc00"; // LEGO Head
-        ctx.fillRect(player.x + 6, player.y, 16, 14);
-        ctx.fillStyle = "#444"; // Torso
-        ctx.fillRect(player.x, player.y + 14, 28, 22);
-        
-        // 6. Lighting Engine
-        if (gameState === "DUNGEON") {
-            const rad = player.lightRadius + (player.focus * 0.5);
-            const grad = ctx.createRadialGradient(player.x+14, player.y+18, 20, player.x+14, player.y+18, rad);
-            grad.addColorStop(0, 'rgba(0,0,0,0)');
-            grad.addColorStop(1, lightMode ? 'rgba(0,0,0,0.1)' : 'rgba(0,0,0,0.85)');
-            ctx.fillStyle = grad;
-            ctx.fillRect(0,0,800,500);
-        }
-
-        // Logic Updates
-        if(gameState === "DUNGEON") {
-            updatePlayer();
-            updateDevourer();
-            idleTimer++;
-            if (lightMode) {
-                lightModeTimer--;
-                if(lightModeTimer <= 0) {
-                    lightMode = false;
-                    document.getElementById('status-tag').innerText = "STATUS: NORMAL";
-                    document.getElementById('status-tag').style.color = "var(--lava-orange)";
-                }
-            }
-        }
-
-        requestAnimationFrame(render);
-    }
-
-    function updatePlayer() {
-        let dx=0, dy=0;
-        if(keys['ArrowUp']) dy = -player.speed;
-        if(keys['ArrowDown']) dy = player.speed;
-        if(keys['ArrowLeft']) dx = -player.speed;
-        if(keys['ArrowRight']) dx = player.speed;
-
-        player.x = Math.max(0, Math.min(772, player.x + dx));
-        player.y = Math.max(0, Math.min(464, player.y + dy));
-    }
-
-    updateHUD();
-    render();
-</script>
-
-</body>
-</html>
+                <span class="bar-label">EXPERIENCE</span>
+                <div class="bar-bg"><div id="xp-bar
