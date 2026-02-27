@@ -83,4 +83,293 @@
             </div>
             <div class="bar-container">
                 <span class="bar-label">EXPERIENCE</span>
-                <div class="bar-bg"><div id="xp-bar
+                <div class="bar-bg"><div id="xp-bar" class="bar-fill" style="background: var(--rune-blue); width: 0%;"></div></div>
+            </div>
+        </div>
+        <div style="text-align: center;">
+            <div style="font-size: 16px; color: var(--gold-glow); text-shadow: 2px 2px 0px #000;">LVL <span id="lvl-val">1</span></div>
+            <div style="font-size: 8px; margin-top: 8px; color: #aaa;">RANK: <span id="rank-name" style="color: white;">NOVICE</span></div>
+        </div>
+        <div>
+            <div class="bar-container">
+                <span class="bar-label">RUNES COLLECTED: <span id="runes-val" style="color: white;">0</span></span>
+                <span class="bar-label" style="margin-top: 8px;">PLAYER SPEED: <span id="speed-val" style="color: white;">3.5</span></span>
+            </div>
+        </div>
+    </div>
+
+    <div id="game-wrapper">
+        <canvas id="master-canvas" width="800" height="500"></canvas>
+    </div>
+
+    <p style="font-size: 9px; color: #888; margin-top: 15px;">[USE ARROWS] COLLECT RUNES TO EXPAND YOUR LIGHT // AVOID THE DEVOURER</p>
+
+<script>
+    const canvas = document.getElementById('master-canvas');
+    const ctx = canvas.getContext('2d');
+
+    // --- GAME STATE & ENTITIES ---
+    let player = {
+        x: 400, y: 250, w: 20, h: 28, speed: 3.5, 
+        hp: 100, xp: 0, level: 1, runes: 0,
+        lightRadius: 100 // Starts small, grows as you level up
+    };
+
+    let devourer = {
+        x: 50, y: 50, radius: 18, speed: 1.5, state: "CHASE",
+        knockbackTimer: 0
+    };
+
+    let runes = [];
+    let particles = [];
+    let frameCount = 0;
+
+    // Procedural background details
+    const terrain = [];
+    for(let i=0; i<30; i++) {
+        terrain.push({ x: Math.random()*800, y: Math.random()*500, size: 4 + Math.random()*8, dark: Math.random() > 0.5 });
+    }
+
+    // --- GAMEPLAY MECHANICS ---
+    function spawnRune() {
+        runes.push({
+            x: 50 + Math.random() * 700,
+            y: 50 + Math.random() * 400,
+            color: Math.random() > 0.5 ? 'var(--rune-blue)' : 'var(--rune-purple)',
+            bobOffset: Math.random() * Math.PI * 2
+        });
+    }
+
+    // Spawn initial runes
+    for(let i=0; i<5; i++) spawnRune();
+
+    function spawnParticles(px, py, color) {
+        for(let i=0; i<15; i++) {
+            particles.push({
+                x: px, y: py,
+                vx: (Math.random() - 0.5) * 8,
+                vy: (Math.random() - 0.5) * 8,
+                life: 1.0,
+                color: color
+            });
+        }
+    }
+
+    // --- UPDATE LOGIC ---
+    const keys = {};
+    window.addEventListener('keydown', e => keys[e.code] = true);
+    window.addEventListener('keyup', e => keys[e.code] = false);
+
+    function updatePlayer() {
+        if (player.hp <= 0) return; // Dead
+
+        let dx=0, dy=0;
+        if(keys['ArrowUp']) dy = -player.speed;
+        if(keys['ArrowDown']) dy = player.speed;
+        if(keys['ArrowLeft']) dx = -player.speed;
+        if(keys['ArrowRight']) dx = player.speed;
+
+        // Diagonal speed normalization
+        if(dx !== 0 && dy !== 0) {
+            dx *= 0.707; dy *= 0.707;
+        }
+
+        player.x = Math.max(10, Math.min(790 - player.w, player.x + dx));
+        player.y = Math.max(10, Math.min(490 - player.h, player.y + dy));
+
+        // Rune Collection
+        for(let i = runes.length - 1; i >= 0; i--) {
+            let r = runes[i];
+            let dist = Math.hypot((player.x + player.w/2) - r.x, (player.y + player.h/2) - r.y);
+            if (dist < 25) {
+                // Collect Rune
+                spawnParticles(r.x, r.y, r.color);
+                runes.splice(i, 1);
+                player.runes++;
+                player.xp += 25;
+                spawnRune(); // Spawn a new one
+
+                // Level Up Check
+                if (player.xp >= 100) {
+                    player.xp = 0;
+                    player.level++;
+                    player.speed += 0.2; // Move faster
+                    player.lightRadius += 30; // See further
+                    player.hp = Math.min(100, player.hp + 20); // Heal slightly
+                }
+                updateHUD();
+            }
+        }
+    }
+
+    function updateDevourer() {
+        if (player.hp <= 0) return;
+
+        if (devourer.knockbackTimer > 0) {
+            devourer.knockbackTimer--;
+            return; // Stunned briefly after hitting player
+        }
+
+        // Always creep towards player
+        let angle = Math.atan2((player.y + player.h/2) - devourer.y, (player.x + player.w/2) - devourer.x);
+        devourer.x += Math.cos(angle) * devourer.speed;
+        devourer.y += Math.sin(angle) * devourer.speed;
+
+        // Collision with player
+        let distToPlayer = Math.hypot((player.x + player.w/2) - devourer.x, (player.y + player.h/2) - devourer.y);
+        if (distToPlayer < devourer.radius + 10) {
+            player.hp -= 15;
+            document.getElementById('game-wrapper').classList.add('shake');
+            setTimeout(() => document.getElementById('game-wrapper').classList.remove('shake'), 200);
+            
+            // Knockback effect so it doesn't instantly kill
+            devourer.x -= Math.cos(angle) * 50;
+            devourer.y -= Math.sin(angle) * 50;
+            devourer.knockbackTimer = 30; 
+            
+            spawnParticles(player.x + player.w/2, player.y + player.h/2, 'var(--ember-red)');
+            updateHUD();
+        }
+    }
+
+    function updateParticles() {
+        for(let i = particles.length - 1; i >= 0; i--) {
+            let p = particles[i];
+            p.x += p.vx;
+            p.y += p.vy;
+            p.life -= 0.05;
+            if (p.life <= 0) particles.splice(i, 1);
+        }
+    }
+
+    function updateHUD() {
+        document.getElementById('hp-bar').style.width = Math.max(0, player.hp) + "%";
+        document.getElementById('xp-bar').style.width = player.xp + "%";
+        document.getElementById('lvl-val').innerText = player.level;
+        document.getElementById('runes-val').innerText = player.runes;
+        document.getElementById('speed-val').innerText = player.speed.toFixed(1);
+
+        const rank = document.getElementById('rank-name');
+        if(player.level > 10) rank.innerText = "GRANDMASTER";
+        else if(player.level > 5) rank.innerText = "ADEPT EXPLORER";
+        else rank.innerText = "NOVICE";
+    }
+
+    // --- RENDERING ENGINE ---
+    function render() {
+        frameCount++;
+
+        // 1. Background
+        ctx.fillStyle = "#0d0d0d";
+        ctx.fillRect(0,0,800,500);
+
+        // Grid lines for retro feel
+        ctx.strokeStyle = "#1a1a1a";
+        ctx.lineWidth = 1;
+        for(let x=0; x<800; x+=40) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,500); ctx.stroke(); }
+        for(let y=0; y<500; y+=40) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(800,y); ctx.stroke(); }
+
+        // Terrain dots
+        terrain.forEach(t => {
+            ctx.fillStyle = t.dark ? "#111" : "#222";
+            ctx.fillRect(t.x, t.y, t.size, t.size);
+        });
+
+        // 2. Runes (Collectibles)
+        runes.forEach(r => {
+            let bob = Math.sin(frameCount / 15 + r.bobOffset) * 4;
+            ctx.shadowBlur = 15; 
+            ctx.shadowColor = r.color === 'var(--rune-blue)' ? '#00e5ff' : '#b300ff';
+            ctx.fillStyle = "#fff";
+            ctx.beginPath();
+            ctx.arc(r.x, r.y + bob, 6, 0, Math.PI*2);
+            ctx.fill();
+            
+            // Outer glow ring
+            ctx.strokeStyle = ctx.shadowColor;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(r.x, r.y + bob, 12 + Math.sin(frameCount/10)*2, 0, Math.PI*2);
+            ctx.stroke();
+        });
+        ctx.shadowBlur = 0;
+
+        // 3. The Devourer (Enemy)
+        ctx.shadowBlur = 20;
+        ctx.shadowColor = "red";
+        ctx.fillStyle = "rgba(150, 0, 0, 0.8)";
+        
+        let pulse = Math.sin(frameCount / 10) * 3;
+        ctx.beginPath();
+        ctx.arc(devourer.x, devourer.y, devourer.radius + pulse, 0, Math.PI*2);
+        ctx.fill();
+        
+        // Devourer Eyes
+        ctx.fillStyle = "#fff";
+        ctx.shadowBlur = 0;
+        ctx.fillRect(devourer.x - 8, devourer.y - 4, 4, 4);
+        ctx.fillRect(devourer.x + 4, devourer.y - 4, 4, 4);
+
+        // 4. Player
+        if (player.hp > 0) {
+            ctx.fillStyle = "#ffcc00"; // Head
+            ctx.fillRect(player.x + 2, player.y, 16, 12);
+            ctx.fillStyle = "#444"; // Torso
+            ctx.fillRect(player.x, player.y + 12, 20, 16);
+            
+            // Walking animation bob
+            if (keys['ArrowUp'] || keys['ArrowDown'] || keys['ArrowLeft'] || keys['ArrowRight']) {
+                ctx.fillStyle = "#222";
+                let step = Math.sin(frameCount / 5) * 4;
+                ctx.fillRect(player.x + 2, player.y + 28, 6, 4 + step);
+                ctx.fillRect(player.x + 12, player.y + 28, 6, 4 - step);
+            }
+        }
+
+        // 5. Particles
+        particles.forEach(p => {
+            ctx.fillStyle = p.color;
+            ctx.globalAlpha = Math.max(0, p.life);
+            ctx.fillRect(p.x, p.y, 4, 4);
+        });
+        ctx.globalAlpha = 1.0;
+
+        // 6. Lighting / Shadow Overlay
+        if (player.hp > 0) {
+            // Light grows with level, makes it easier
+            const grad = ctx.createRadialGradient(
+                player.x+10, player.y+14, 10, 
+                player.x+10, player.y+14, player.lightRadius
+            );
+            grad.addColorStop(0, 'rgba(0,0,0,0)');
+            grad.addColorStop(1, 'rgba(5,5,5,0.95)');
+            
+            ctx.fillStyle = grad;
+            ctx.fillRect(0,0,800,500);
+        } else {
+            // Game Over Screen Overlay
+            ctx.fillStyle = "rgba(150, 0, 0, 0.4)";
+            ctx.fillRect(0,0,800,500);
+            ctx.fillStyle = "white";
+            ctx.font = "30px 'Press Start 2P'";
+            ctx.textAlign = "center";
+            ctx.fillText("THE DUNGEON CLAIMED YOU", 400, 250);
+            ctx.font = "12px 'Press Start 2P'";
+            ctx.fillText("REFRESH PAGE TO TRY AGAIN", 400, 300);
+            ctx.textAlign = "left";
+        }
+
+        // Game Loop
+        updatePlayer();
+        updateDevourer();
+        updateParticles();
+        requestAnimationFrame(render);
+    }
+
+    // Start
+    updateHUD();
+    render();
+</script>
+
+</body>
+</html>
