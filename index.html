@@ -3,409 +3,294 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Hell Kitty Dungeon of Glints</title>
+    <title>Hell Kitty: Nightmare Infinite</title>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* Hell Kitty Goth Palette */
-            --hk-black: #0a0a0a;
-            --hk-charcoal: #1f1f1f;
-            --hk-goth-pink: #ff007f; /* Deep, vibrant pink */
-            --hk-soft-pink: #ff99cc;
-            --hk-accent-red: #ee0000; /* For the bow */
-            --hk-white: #ffffff;
-            --hk-glint-purple: #9933ff;
-            
-            --panel-bg: rgba(10, 10, 10, 0.95);
-            --border-color: var(--hk-soft-pink);
+            --hk-pink: #ff007f;
+            --hk-soft: #ff99cc;
+            --hk-dark: #0d0208;
+            --hk-void: #000000;
         }
 
         * { box-sizing: border-box; image-rendering: pixelated; }
 
         body {
-            background-color: var(--hk-black);
+            background-color: var(--hk-void);
             color: #eee;
             font-family: 'Press Start 2P', cursive;
             margin: 0;
-            padding: 10px;
+            padding: 0;
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
+            height: 100vh;
             overflow: hidden;
-            user-select: none;
         }
 
-        /* --- CRT Filter (kept for retro feel) --- */
-        body::before {
-            content: " ";
-            position: fixed;
+        #game-container {
+            position: relative;
+            width: 1000px;
+            height: 600px;
+            border: 4px solid var(--hk-pink);
+            overflow: hidden;
+            box-shadow: 0 0 50px rgba(255, 0, 127, 0.4);
+        }
+
+        #ui-layer {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 10;
+            pointer-events: none;
+            width: calc(100% - 40px);
+        }
+
+        .stat-box {
+            background: rgba(13, 2, 8, 0.8);
+            border-left: 5px solid var(--hk-pink);
+            padding: 10px;
+            margin-bottom: 10px;
+            display: inline-block;
+        }
+
+        .bar { width: 200px; height: 10px; background: #222; margin-top: 5px; border: 1px solid #444; }
+        .bar-fill { height: 100%; transition: width 0.3s; }
+
+        #level-display {
+            position: absolute;
+            right: 0;
+            top: 0;
+            text-align: right;
+            color: var(--hk-pink);
+            text-shadow: 2px 2px #000;
+        }
+
+        /* Scanline Overlay */
+        #game-container::after {
+            content: "";
+            position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.08) 50%), 
-                        linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
-            z-index: 2000;
-            background-size: 100% 3px, 3px 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
+            background-size: 100% 4px;
+            z-index: 5;
             pointer-events: none;
         }
-
-        #hud-top {
-            width: 800px;
-            display: grid;
-            grid-template-columns: 1.5fr 1fr 1.5fr;
-            background: var(--panel-bg);
-            border: 4px solid var(--border-color);
-            padding: 12px;
-            margin-bottom: 5px;
-            box-shadow: 0 4px 15px rgba(255, 153, 204, 0.3);
-        }
-
-        .bar-container { margin-bottom: 8px; }
-        .bar-label { font-size: 8px; color: var(--hk-soft-pink); margin-bottom: 4px; display: block; }
-        .bar-bg { background: #000; height: 14px; border: 2px solid var(--hk-charcoal); position: relative; }
-        .bar-fill { height: 100%; width: 0%; transition: width 0.2s ease-out; }
-
-        #game-wrapper {
-            position: relative;
-            width: 800px;
-            height: 500px;
-            border: 6px solid var(--border-color);
-            background: #000;
-            box-shadow: 0 0 25px rgba(255, 0, 127, 0.2);
-        }
-
-        .shake { animation: shake 0.2s; }
-        @keyframes shake { 0% {left:5px;} 25% {left:-5px;} 50% {top:5px;} 75% {top:-5px;} 100% {left:0; top:0;} }
     </style>
 </head>
-<body id="main-body">
+<body>
 
-    <div id="hud-top">
-        <div>
-            <div class="bar-container">
-                <span class="bar-label">VITALITY (HP)</span>
-                <div class="bar-bg"><div id="hp-bar" class="bar-fill" style="background: var(--hk-accent-red); width: 100%;"></div></div>
+    <div id="game-container">
+        <div id="ui-layer">
+            <div class="stat-box">
+                <div style="font-size: 8px;">VITALITY</div>
+                <div class="bar"><div id="hp-fill" class="bar-fill" style="background: var(--hk-pink); width: 100%;"></div></div>
             </div>
-            <div class="bar-container">
-                <span class="bar-label">DARKNESS EXPERIENCE</span>
-                <div class="bar-bg"><div id="xp-bar" class="bar-fill" style="background: var(--hk-goth-pink); width: 0%;"></div></div>
-            </div>
-        </div>
-        <div style="text-align: center;">
-            <div style="font-size: 16px; color: var(--hk-white); text-shadow: 2px 2px 0px var(--hk-goth-pink);">LVL <span id="lvl-val">1</span></div>
-            <div style="font-size: 7px; margin-top: 8px; color: #aaa;">RANK: <span id="rank-name" style="color: var(--hk-soft-pink);">PUFF BALL</span></div>
-        </div>
-        <div>
-            <div class="bar-container">
-                <span class="bar-label">GLINTS COLLECTED: <span id="runes-val" style="color: var(--hk-white);">0</span></span>
-                <span class="bar-label" style="margin-top: 8px;">SPEED: <span id="speed-val" style="color: var(--hk-white);">3.5</span></span>
+            <div id="level-display">
+                <div style="font-size: 18px;">LVL <span id="lvl-txt">1</span></div>
+                <div style="font-size: 7px; margin-top: 5px;">GLINTS: <span id="glint-txt">0</span></div>
             </div>
         </div>
+        <canvas id="gameCanvas"></canvas>
     </div>
-
-    <div id="game-wrapper">
-        <canvas id="master-canvas" width="800" height="500"></canvas>
-    </div>
-
-    <p style="font-size: 9px; color: #888; margin-top: 15px;">[USE ARROWS] COLLECT GLINT HEARTS TO CLEAR THE FOG // AVOID NIGHTMARE PAWS</p>
 
 <script>
-    const canvas = document.getElementById('master-canvas');
+    const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
+    const container = document.getElementById('game-container');
+    
+    canvas.width = 1000;
+    canvas.height = 600;
 
-    // --- GAME STATE & ENTITIES ---
-    let player = {
-        x: 400, y: 250, w: 24, h: 32, speed: 3.5, 
-        hp: 100, xp: 0, level: 1, runes: 0,
-        lightRadius: 100 // Grows as you level
+    // --- WORLD SETTINGS ---
+    const WORLD = { width: 3000, height: 2000 };
+    let camera = { x: 0, y: 0 };
+    let frame = 0;
+
+    // --- PLAYER ---
+    let kitty = {
+        x: 1500, y: 1000, w: 32, h: 40,
+        vx: 0, vy: 0, speed: 5,
+        hp: 100, maxHp: 100,
+        lvl: 1, glints: 0,
+        trail: []
     };
 
-    let enemy = {
-        x: 50, y: 50, radius: 20, speed: 1.6, state: "CHASE",
-        knockbackTimer: 0
-    };
-
+    // --- ENEMIES & PROJECTILES ---
+    let nightmare = { x: 1200, y: 800, r: 40, speed: 2.5, shootTimer: 0 };
+    let bullets = [];
     let glints = [];
-    let particles = [];
-    let frameCount = 0;
+    let foliage = [];
+    let stars = [];
 
-    // Procedural background details (Hell Kitty themed terrain)
-    const terrain = [];
-    for(let i=0; i<30; i++) {
-        terrain.push({ x: Math.random()*800, y: Math.random()*500, size: 4 + Math.random()*8, dark: Math.random() > 0.4 });
-    }
+    // Initialize World Details
+    for(let i=0; i<400; i++) stars.push({x: Math.random()*WORLD.width, y: Math.random()*WORLD.height, s: Math.random()*2});
+    for(let i=0; i<60; i++) foliage.push({x: Math.random()*WORLD.width, y: Math.random()*WORLD.height, r: 10+Math.random()*20, color: Math.random() > 0.5 ? '#220011' : '#110022'});
+    for(let i=0; i<15; i++) spawnGlint();
 
-    // --- GAMEPLAY MECHANICS ---
     function spawnGlint() {
-        glints.push({
-            x: 50 + Math.random() * 700,
-            y: 50 + Math.random() * 400,
-            // Randomly Goth Pink or Glint Purple
-            color: Math.random() > 0.5 ? '#ff007f' : '#9933ff',
-            bobOffset: Math.random() * Math.PI * 2
-        });
+        glints.push({ x: Math.random()*WORLD.width, y: Math.random()*WORLD.height, s: 8 + Math.random()*5 });
     }
 
-    // Spawn initial Glint Hearts
-    for(let i=0; i<6; i++) spawnGlint();
-
-    function spawnParticles(px, py, color, count=15) {
-        for(let i=0; i<count; i++) {
-            particles.push({
-                x: px, y: py,
-                vx: (Math.random() - 0.5) * 8,
-                vy: (Math.random() - 0.5) * 8,
-                life: 1.0,
-                color: color
-            });
-        }
-    }
-
-    // --- UPDATE LOGIC ---
     const keys = {};
-    window.addEventListener('keydown', e => keys[e.code] = true);
-    window.addEventListener('keyup', e => keys[e.code] = false);
+    window.onkeydown = (e) => keys[e.code] = true;
+    window.onkeyup = (e) => keys[e.code] = false;
 
-    function updatePlayer() {
-        if (player.hp <= 0) return; // Dead Kitten
+    function update() {
+        frame++;
+        
+        // Kitty Movement
+        if (keys['ArrowLeft'] || keys['KeyA']) kitty.vx = -kitty.speed;
+        else if (keys['ArrowRight'] || keys['KeyD']) kitty.vx = kitty.speed;
+        else kitty.vx *= 0.8;
 
-        let dx=0, dy=0;
-        if(keys['ArrowUp']) dy = -player.speed;
-        if(keys['ArrowDown']) dy = player.speed;
-        if(keys['ArrowLeft']) dx = -player.speed;
-        if(keys['ArrowRight']) dx = player.speed;
+        if (keys['ArrowUp'] || keys['KeyW']) kitty.vy = -kitty.speed;
+        else if (keys['ArrowDown'] || keys['KeyS']) kitty.vy = kitty.speed;
+        else kitty.vy *= 0.8;
 
-        // Diagonal speed normalization
-        if(dx !== 0 && dy !== 0) { dx *= 0.707; dy *= 0.707; }
+        kitty.x += kitty.vx;
+        kitty.y += kitty.vy;
 
-        player.x = Math.max(10, Math.min(790 - player.w, player.x + dx));
-        player.y = Math.max(10, Math.min(490 - player.h, player.y + dy));
+        // Keep in bounds
+        kitty.x = Math.max(0, Math.min(WORLD.width - kitty.w, kitty.x));
+        kitty.y = Math.max(0, Math.min(WORLD.height - kitty.h, kitty.y));
+
+        // Trail effect
+        if(frame % 2 === 0) {
+            kitty.trail.push({x: kitty.x, y: kitty.y, life: 10});
+            if(kitty.trail.length > 10) kitty.trail.shift();
+        }
+
+        // Camera Follow
+        camera.x = kitty.x - canvas.width/2;
+        camera.y = kitty.y - canvas.height/2;
+        camera.x = Math.max(0, Math.min(camera.x, WORLD.width - canvas.width));
+        camera.y = Math.max(0, Math.min(camera.y, WORLD.height - canvas.height));
+
+        // Nightmare AI & Shooting
+        let angle = Math.atan2(kitty.y - nightmare.y, kitty.x - nightmare.x);
+        nightmare.x += Math.cos(angle) * nightmare.speed;
+        nightmare.y += Math.sin(angle) * nightmare.speed;
+        
+        nightmare.shootTimer++;
+        if(nightmare.shootTimer > 60) {
+            bullets.push({x: nightmare.x, y: nightmare.y, vx: Math.cos(angle)*7, vy: Math.sin(angle)*7, life: 200});
+            nightmare.shootTimer = 0;
+        }
+
+        // Bullet Logic
+        bullets.forEach((b, i) => {
+            b.x += b.vx; b.y += b.vy; b.life--;
+            if(Math.hypot(b.x - kitty.x, b.y - kitty.y) < 20) {
+                kitty.hp -= 10;
+                bullets.splice(i, 1);
+                container.style.filter = "invert(1)";
+                setTimeout(()=>container.style.filter="none", 50);
+            }
+        });
+        bullets = bullets.filter(b => b.life > 0);
 
         // Glint Collection
-        for(let i = glints.length - 1; i >= 0; i--) {
-            let g = glints[i];
-            let dist = Math.hypot((player.x + player.w/2) - g.x, (player.y + player.h/2) - g.y);
-            if (dist < 28) {
-                // Collect Glint
-                spawnParticles(g.x, g.y, g.color);
+        glints.forEach((g, i) => {
+            if(Math.hypot(g.x - kitty.x, g.y - kitty.y) < 40) {
                 glints.splice(i, 1);
-                player.runes++;
-                player.xp += 25; // 4 glints per level
-                spawnGlint(); // Spawn replacement
-
-                // Level Up Check
-                if (player.xp >= 100) {
-                    player.xp = 0;
-                    player.level++;
-                    player.speed += 0.2; // Move faster
-                    player.lightRadius += 30; // Clear the fog
-                    player.hp = Math.min(100, player.hp + 15); // Heal slightly
-                    spawnParticles(player.x + player.w/2, player.y + player.h/2, '#ffffff', 30); // Level up burst
+                kitty.glints++;
+                if(kitty.glints % 5 === 0) {
+                    kitty.lvl++;
+                    kitty.speed += 0.5;
                 }
-                updateHUD();
+                spawnGlint();
+                updateUI();
             }
-        }
-    }
-
-    function updateEnemy() {
-        if (player.hp <= 0) return;
-
-        if (enemy.knockbackTimer > 0) {
-            enemy.knockbackTimer--;
-            return; // Stunned briefly after hitting player
-        }
-
-        // Always creep towards Goth Kitten
-        let angle = Math.atan2((player.y + player.h/2) - enemy.y, (player.x + player.w/2) - enemy.x);
-        enemy.x += Math.cos(angle) * enemy.speed;
-        enemy.y += Math.sin(angle) * enemy.speed;
-
-        // Collision with player
-        let distToPlayer = Math.hypot((player.x + player.w/2) - enemy.x, (player.y + player.h/2) - enemy.y);
-        if (distToPlayer < enemy.radius + 12) {
-            player.hp -= 20; // Hurts more now
-            document.getElementById('game-wrapper').classList.add('shake');
-            setTimeout(() => document.getElementById('game-wrapper').classList.remove('shake'), 200);
-            
-            // Knockback effect so it doesn't instantly kill
-            enemy.x -= Math.cos(angle) * 60;
-            enemy.y -= Math.sin(angle) * 60;
-            enemy.knockbackTimer = 40; // Longer stun
-            
-            spawnParticles(player.x + player.w/2, player.y + player.h/2, '#000000', 20); // Dark damage burst
-            updateHUD();
-        }
-    }
-
-    function updateParticles() {
-        for(let i = particles.length - 1; i >= 0; i--) {
-            let p = particles[i];
-            p.x += p.vx;
-            p.y += p.vy;
-            p.life -= 0.04; // Slower fade
-            if (p.life <= 0) particles.splice(i, 1);
-        }
-    }
-
-    function updateHUD() {
-        document.getElementById('hp-bar').style.width = Math.max(0, player.hp) + "%";
-        document.getElementById('xp-bar').style.width = player.xp + "%";
-        document.getElementById('lvl-val').innerText = player.level;
-        document.getElementById('runes-val').innerText = player.runes;
-        document.getElementById('speed-val').innerText = player.speed.toFixed(1);
-
-        const rank = document.getElementById('rank-name');
-        if(player.level > 12) rank.innerText = "DUNGEON MATRIARCH";
-        else if(player.level > 8) rank.innerText = "GOTH PRINCESS";
-        else if(player.level > 4) rank.innerText = "REBEL KITTY";
-        else rank.innerText = "PUFF BALL";
-    }
-
-    // --- RENDERING ENGINE ---
-    function render() {
-        frameCount++;
-
-        // 1. Clear & Background
-        ctx.fillStyle = "#050505"; // Pure black dungeon
-        ctx.fillRect(0,0,800,500);
-
-        // Grid lines for retro feel (subtle gray)
-        ctx.strokeStyle = "#151515";
-        ctx.lineWidth = 1;
-        for(let x=0; x<800; x+=40) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,500); ctx.stroke(); }
-        for(let y=0; y<500; y+=40) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(800,y); ctx.stroke(); }
-
-        // Terrain dots (charcoal)
-        terrain.forEach(t => {
-            ctx.fillStyle = t.dark ? "#0a0a0a" : "#1a1a1a";
-            ctx.fillRect(t.x, t.y, t.size, t.size);
         });
 
-        // 2. Glints (Collectibles: Pulsing Hearts)
-        glints.forEach(g => {
-            let bob = Math.sin(frameCount / 12 + g.bobOffset) * 5;
-            let pulseSize = Math.sin(frameCount/8) * 2;
-            ctx.shadowBlur = 20; 
-            ctx.shadowColor = g.color;
-            ctx.fillStyle = "#fff"; // Heart core
-            
-            // Draw a simple pixel heart shape
+        if(kitty.hp <= 0) location.reload();
+    }
+
+    function updateUI() {
+        document.getElementById('hp-fill').style.width = kitty.hp + "%";
+        document.getElementById('lvl-txt').innerText = kitty.lvl;
+        document.getElementById('glint-txt').innerText = kitty.glints;
+    }
+
+    function draw() {
+        ctx.fillStyle = "#050005";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.save();
+        ctx.translate(-camera.x, -camera.y);
+
+        // 1. Parallax Stars
+        ctx.fillStyle = "#444";
+        stars.forEach(s => {
+            ctx.fillRect(s.x + (camera.x * 0.2), s.y + (camera.y * 0.2), s.s, s.s);
+        });
+
+        // 2. Foliage
+        foliage.forEach(f => {
+            ctx.fillStyle = f.color;
+            let wave = Math.sin(frame/20 + f.x) * 5;
             ctx.beginPath();
-            let hx = g.x;
-            let hy = g.y + bob;
-            let size = 8 + pulseSize;
-            
-            // Minimalist heart geometry
-            ctx.moveTo(hx, hy + size/4);
-            ctx.quadraticCurveTo(hx, hy, hx - size/2, hy);
-            ctx.quadraticCurveTo(hx - size, hy, hx - size, hy + size/2);
-            ctx.quadraticCurveTo(hx - size, hy + size, hx, hy + size * 1.3);
-            ctx.quadraticCurveTo(hx + size, hy + size, hx + size, hy + size/2);
-            ctx.quadraticCurveTo(hx + size, hy, hx + size/2, hy);
-            ctx.quadraticCurveTo(hx, hy, hx, hy + size/4);
+            ctx.arc(f.x, f.y + wave, f.r, 0, Math.PI*2);
             ctx.fill();
         });
-        ctx.shadowBlur = 0;
 
-        // 3. Nightmare Paws (Enemy: Shadow Blob)
-        ctx.shadowBlur = 25;
-        ctx.shadowColor = "#ff007f"; // Goth Pink outline
-        ctx.fillStyle = "rgba(20, 0, 10, 0.9)"; // Dark magenta-black body
-        
-        let pulse = Math.sin(frameCount / 10) * 3;
-        ctx.beginPath();
-        ctx.arc(enemy.x, enemy.y, enemy.radius + pulse, 0, Math.PI*2);
-        ctx.fill();
-        
-        // Nightmare Eyes (Piercing Pink)
-        ctx.fillStyle = "#ff007f";
-        ctx.shadowBlur = 0;
-        ctx.fillRect(enemy.x - 9, enemy.y - 5, 5, 5);
-        ctx.fillRect(enemy.x + 4, enemy.y - 5, 5, 5);
-        ctx.fillStyle = "white"; // pupils
-        ctx.fillRect(enemy.x - 7, enemy.y - 3, 1, 1);
-        ctx.fillRect(enemy.x + 6, enemy.y - 3, 1, 1);
+        // 3. Glints (Hearts)
+        glints.forEach(g => {
+            ctx.shadowBlur = 15; ctx.shadowColor = "#ff007f";
+            ctx.fillStyle = "#ff007f";
+            let pulse = Math.sin(frame/10) * 3;
+            ctx.fillRect(g.x - (g.s+pulse)/2, g.y - (g.s+pulse)/2, g.s+pulse, g.s+pulse);
+            ctx.shadowBlur = 0;
+        });
 
-        // 4. Hell Kitty Player (Pixel Art Style)
-        if (player.hp > 0) {
-            // Draw Goth Kitty Head
-            ctx.fillStyle = "#ffffff"; 
-            ctx.fillRect(player.x + 2, player.y, 20, 16); // Face core
-            
-            // Ears
-            ctx.fillRect(player.x + 2, player.y - 4, 6, 4); 
-            ctx.fillRect(player.x + 16, player.y - 4, 6, 4);
-            
-            // Goth Outfit (Torso/Dress)
-            ctx.fillStyle = "#111111"; // Black dress
-            ctx.fillRect(player.x, player.y + 16, 24, 16);
-            
-            // The Iconic Bow (Studded Red)
-            ctx.fillStyle = "#ee0000"; // Accent Red
-            ctx.fillRect(player.x + 15, player.y, 9, 7); // Main Bow
-            ctx.fillStyle = "#000000"; // Studs
-            ctx.fillRect(player.x + 17, player.y + 2, 2, 2);
-            ctx.fillRect(player.x + 20, player.y + 4, 2, 2);
-
-            // Walking animation (bobbing legs)
-            if (keys['ArrowUp'] || keys['ArrowDown'] || keys['ArrowLeft'] || keys['ArrowRight']) {
-                ctx.fillStyle = "#000000"; // Black boots
-                let step = Math.sin(frameCount / 5) * 5;
-                ctx.fillRect(player.x + 3, player.y + 32, 7, 4 + step);
-                ctx.fillRect(player.x + 14, player.y + 32, 7, 4 - step);
-            }
-        }
-
-        // 5. Particles (Collection/Damage bursts)
-        particles.forEach(p => {
-            ctx.fillStyle = p.color;
-            ctx.globalAlpha = Math.max(0, p.life);
-            ctx.fillRect(p.x, p.y, 4, 4);
+        // 4. Kitty & Trail
+        kitty.trail.forEach((t, i) => {
+            ctx.globalAlpha = i/20;
+            ctx.fillStyle = "#ff99cc";
+            ctx.fillRect(t.x, t.y, kitty.w, kitty.h);
         });
         ctx.globalAlpha = 1.0;
 
-        // 6. Progressive Lighting / Fog Overlay
-        if (player.hp > 0) {
-            // Light grows with level, clears moody fog
-            const grad = ctx.createRadialGradient(
-                player.x+12, player.y+16, 10, 
-                player.x+12, player.y+16, player.lightRadius
-            );
-            
-            // Progresses from deep magenta fog to pure light
-            grad.addColorStop(0, 'rgba(0,0,0,0)');
-            if (player.level < 5) {
-                grad.addColorStop(1, 'rgba(30, 0, 15, 0.98)'); // Dense Moody Pink fog
-            } else if (player.level < 10) {
-                grad.addColorStop(1, 'rgba(15, 5, 10, 0.96)'); // Moody charcoal fog
-            } else {
-                grad.addColorStop(1, 'rgba(5,5,5,0.92)'); // Clearer, safe dungeon
-            }
-            
-            ctx.fillStyle = grad;
-            ctx.fillRect(0,0,800,500);
-        } else {
-            // Game Over Screen (Death Pink tint)
-            ctx.fillStyle = "rgba(100, 0, 50, 0.5)";
-            ctx.fillRect(0,0,800,500);
-            ctx.fillStyle = "white";
-            ctx.font = "30px 'Press Start 2P'";
-            ctx.textAlign = "center";
-            ctx.fillText("NIGHTMARE CLAIMED KITTY", 400, 250);
-            ctx.font = "12px 'Press Start 2P'";
-            ctx.fillText("REFRESH PAGE TO TRY AGAIN", 400, 300);
-            ctx.textAlign = "left";
-        }
+        // Kitty Core
+        ctx.fillStyle = "white"; 
+        ctx.fillRect(kitty.x, kitty.y, kitty.w, 20); // Head
+        ctx.fillStyle = "black";
+        ctx.fillRect(kitty.x, kitty.y + 20, kitty.w, 20); // Dress
+        // Red Bow
+        ctx.fillStyle = "#ee0000";
+        ctx.fillRect(kitty.x + 20, kitty.y - 5, 15, 10);
 
-        // Game Loop
-        updatePlayer();
-        updateEnemy();
-        updateParticles();
-        requestAnimationFrame(render);
+        // 5. Nightmare Paws
+        ctx.shadowBlur = 30; ctx.shadowColor = "red";
+        ctx.fillStyle = "#110005";
+        ctx.beginPath();
+        ctx.arc(nightmare.x, nightmare.y, nightmare.r + Math.sin(frame/5)*5, 0, Math.PI*2);
+        ctx.fill();
+        // Eyes
+        ctx.fillStyle = "#ff007f";
+        ctx.fillRect(nightmare.x - 15, nightmare.y - 10, 8, 8);
+        ctx.fillRect(nightmare.x + 7, nightmare.y - 10, 8, 8);
+
+        // 6. Bullets
+        ctx.fillStyle = "#ff007f";
+        bullets.forEach(b => {
+            ctx.beginPath();
+            ctx.arc(b.x, b.y, 5, 0, Math.PI*2);
+            ctx.fill();
+        });
+
+        ctx.restore();
     }
 
-    // Start
-    updateHUD();
-    render();
-</script>
+    function loop() {
+        update();
+        draw();
+        requestAnimationFrame(loop);
+    }
 
+    updateUI();
+    loop();
+</script>
 </body>
 </html>
